@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 
+# in-memory cache to store responses using python dictionary for a limited time 
+# period (TTL) to avoid repeated API calls for the same URL
 CACHE = {}
 TTL_SECONDS = 3600  # 1 hour
 
