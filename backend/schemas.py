@@ -1,7 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 
 class UrlRequest(BaseModel):
-    url: str
+    url: HttpUrl
 
 class UrlResponse(BaseModel):
     output: str
