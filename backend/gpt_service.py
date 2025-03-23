@@ -10,14 +10,14 @@ class ChatGPTService:
         with open("prompt_template.txt", "r") as file:
             template = file.read()
 
-        system_prompt = template.replace("{url}", url)
+        system_prompt = template.replace("{url}", str(url))
 
         response = await self.client.chat.completions.create(
             model=self.model,
             messages=[
                 {"role": "system", "content": system_prompt}
             ],
-            max_tokens=10,
+            max_tokens=5,
             temperature=0.2,
             top_p=1.0,
             frequency_penalty=0.2,

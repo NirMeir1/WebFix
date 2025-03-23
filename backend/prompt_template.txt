@@ -1,3 +1,1 @@
-You are an AI that analyzes the content of websites.
-The URL to analyze is: {url}
-Provide a clear, concise summary of what this website is about and any insights you can extract from it.
+Say - Hello world! {url}
