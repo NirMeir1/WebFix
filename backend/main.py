@@ -1,7 +1,12 @@
 from fastapi import FastAPI
 from backend.schemas import UrlRequest, UrlResponse
 from backend.gpt_service import ChatGPTService
-from backend.cache import get_cached_response, save_response, is_recent_response
+from backend.cache import (
+    get_cached_response,
+    save_response,
+    is_recent_response,
+    initialize_cache
+)
 from dotenv import load_dotenv
 from logging_config import setup_logging
 import logging
@@ -24,6 +29,10 @@ def root():
 
 @app.post("/analyze-url", response_model=UrlResponse)
 async def analyze_url(request: UrlRequest):
+    
+    logger.info(f"Initialize cache when the POST request is made")
+    initialize_cache() 
+
     logger.info(f"Analyzing URL: {request.url}")
     
     # Check if the response is cached
