@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "compounds": [
+    {
+      "name": "Debug FastAPI",
+      "configurations": ["Run FastAPI"]
+    }
+  ],
+  "configurations": [
+    {
+      "name": "Run FastAPI",
+      "type": "python",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "backend.main:app",
+        "--reload"
+      ],
+      "justMyCode": false,
+      "python": "${workspaceFolder}/backend/.venv/Scripts/python.exe",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/backend"
+      }
+    }
+  ]
+}
