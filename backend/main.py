@@ -47,7 +47,7 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
 
     # Generate GPT response
     gpt = ChatGPTService()
-    output = await gpt.generate_response(request.url)
+    output = await gpt.generate_response(request.url, request.report_type, request.industry, request.email)
     logger.info(f"GPT response generated for URL: {request.url}")
 
     # Save to appropriate cache

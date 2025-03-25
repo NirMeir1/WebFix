@@ -29,8 +29,8 @@ class ChatGPTService:
 
         # Replace the placeholders in the template with the values
         system_prompt = template.replace("{url}", str(url)) \
-                                .replace("{report_type}", str(report_type)) \
-                                .replace("{industry}", str(industry)) \
+                                .replace("{report_type}", report_type) \
+                                .replace("{industry}", industry) \
                                 .replace("{email}", str(email) if email else "")
 
         # Print the system prompt for validation
