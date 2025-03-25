@@ -1,56 +1,67 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
 from backend.schemas import UrlRequest, UrlResponse
 from backend.gpt_service import ChatGPTService
 from backend.cache import (
+    initialize_caches,
     get_cached_response,
     save_response,
     is_recent_response,
-    initialize_cache
+    is_basic_cached,
 )
+from backend.email_auth import send_verification_email, verify_email, is_email_verified
 from dotenv import load_dotenv
 from logging_config import setup_logging
 import logging
 
-# Set up logging once at the start of your application
 setup_logging()
-
-# Create a logger for this module
 logger = logging.getLogger(__name__)
-
 load_dotenv()
 
-app = FastAPI()
+app = FastAPI(on_startup=[initialize_caches])
 
 @app.get("/")
 def root():
     logger.info("Root endpoint accessed")
     return {"message": "Backend is running"}
 
-
 @app.post("/analyze-url", response_model=UrlResponse)
-async def analyze_url(request: UrlRequest):
-    
-    logger.info(f"Initialize cache when the POST request is made")
-    initialize_cache() 
+async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
+    # Validate that industry and report_type are correct
+    logger.info(f"Processing URL request: {request.url}")
 
-    logger.info(f"Analyzing URL: {request.url}")
-    
-    # Check if the response is cached
-    if is_recent_response(request.url):
-        logger.info(f"Returning cached response for URL: {request.url}")
-        return UrlResponse(output=get_cached_response(request.url))
-    
-    # If not cached, process the URL using ChatGPT
-    try:
-        gpt = ChatGPTService()
-        logger.info(f"Generating response for URL: {request.url}")
-        output = await gpt.generate_response(request.url)
-        
-        # Save the new response
-        save_response(request.url, output)
-        logger.info(f"Response generated and saved for URL: {request.url}")
-        
-        return UrlResponse(output=output)
-    except Exception as e:
-        logger.error(f"Error generating response for URL: {request.url}, Error: {str(e)}")
-        return {"error": "An error occurred while processing the request. Please try again later."}
+    # URL normalization and cache check
+    if is_recent_response(request.url, request.report_type):
+        output = get_cached_response(request.url, request.report_type)
+        logger.info(f"Returning cached response for {request.url} (Type: {request.report_type})")
+        return UrlResponse(output=output, message="Type A: Cached response")
+
+    # Basic -> Deep upgrade check
+    if request.report_type == "deep":
+        if not request.email:
+            logger.warning("Email required but not provided for deep report")
+            raise HTTPException(status_code=400, detail="Email required for deep reports")
+        if not is_email_verified(request.email):
+            background_tasks.add_task(send_verification_email, request.email, request.url)
+            logger.info(f"Email verification initiated for {request.email}")
+            return UrlResponse(output="Email verification sent. Please verify to proceed.", message="Type B: Awaiting verification")
+
+    # Generate GPT response
+    gpt = ChatGPTService()
+    output = await gpt.generate_response(request.url)
+    logger.info(f"GPT response generated for URL: {request.url}")
+
+    # Save to appropriate cache
+    save_response(request.url, request.report_type, output)
+
+    message_type = "Type Z: New URL request" if request.report_type == "basic" else "Type B: Deep report generated"
+
+    return UrlResponse(output=output, message=message_type)
+
+@app.get("/verify-email")
+def email_verification(email: str, token: str):
+    if verify_email(email, token):
+        logger.info(f"Email successfully verified: {email}")
+        return {"message": "Email successfully verified."}
+    else:
+        logger.error(f"Invalid verification attempt for email: {email}")
+        raise HTTPException(status_code=400, detail="Invalid or expired verification token.")

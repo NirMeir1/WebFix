@@ -2,78 +2,67 @@ import json
 import logging
 from datetime import datetime, timedelta
 from typing import Dict
+from pydantic import HttpUrl
 
 logger = logging.getLogger(__name__)
 
-CACHE_FILE = "cache.json"  # File to store cached responses
-TTL_SECONDS = 3600  # 1 hour
+BASIC_CACHE_FILE = "basic_report_cache.json"
+DEEP_CACHE_FILE = "deep_report_cache.json"
+TTL_SECONDS = 86400  # 24 hours
 
-# Cache variable, but won't load until explicitly called
-CACHE = {}
+basic_cache = {}
+deep_cache = {}
 
-from pydantic.networks import HttpUrl
+def normalize_url(url: HttpUrl) -> str:
+    return str(url).strip().lower()
 
-def normalize_url(url) -> str:
-    # Ensure the URL is of type HttpUrl or string, and convert it to a string if necessary
-    if isinstance(url, HttpUrl):
-        url = str(url)  # Convert HttpUrl to string
-    elif not isinstance(url, str):
-        raise ValueError(f"Expected a string or HttpUrl, but got: {type(url)} for URL: {url}")
-    return url.strip().lower() 
-
-def load_cache() -> Dict:
+def load_cache(file_name: str) -> Dict:
     try:
-        with open(CACHE_FILE, "r") as f:
-            cache = json.load(f)
-            logger.info("Cache loaded from file.")
-            return cache
-    except FileNotFoundError:
-        logger.warning("Cache file not found. Starting with empty cache.")
-        return {}
-    except Exception as e:
-        logger.error(f"Error loading cache: {e}")
+        with open(file_name, "r") as f:
+            logger.info(f"Cache loaded from {file_name}")
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        logger.warning(f"Cache file {file_name} not found or empty. Starting new cache.")
         return {}
 
-def save_cache():
-    try:
-        logger.info("Convert all cache dictionary keys to strings before saving to file.")
-        cache_with_str_keys = {normalize_url(url): data for url, data in CACHE.items()}
-        with open(CACHE_FILE, "w") as f:
-            json.dump(cache_with_str_keys, f, default=str)
-            logger.info("Cache saved to file.")
-    except Exception as e:
-        logger.error(f"Error saving cache: {e}")
+def save_cache(cache: Dict, file_name: str):
+    with open(file_name, "w") as f:
+        json.dump(cache, f)
+        logger.info(f"Cache saved to {file_name}")
 
-def initialize_cache():
-    global CACHE
-    logger.info("Load the cache every time the function is called")
-    CACHE = load_cache()
+def initialize_caches():
+    global basic_cache, deep_cache
+    basic_cache = load_cache(BASIC_CACHE_FILE)
+    deep_cache = load_cache(DEEP_CACHE_FILE)
 
-def is_recent_response(url: str) -> bool:
-    normalized_url = normalize_url(url)
-    entry = CACHE.get(normalized_url)
-    if not entry:
-        logger.info(f"No cached entry found for URL: {url}")
-        return False
-    try:
+def is_recent_response(url: HttpUrl, report_type: str) -> bool:
+    """ Choose cache based on report_type """
+    cache = basic_cache if report_type == "basic" else deep_cache
+    entry = cache.get(normalize_url(url))
+    if entry:
         timestamp = datetime.fromisoformat(entry["timestamp"])
-        is_recent = (datetime.now() - timestamp) < timedelta(seconds=TTL_SECONDS)
-        logger.info(f"Cache hit for URL: {url} (Recent: {is_recent})")
-        return is_recent
-    except Exception as e:
-        logger.error(f"Invalid timestamp for URL {url}: {e}")
-        return False
+        recent = (datetime.now() - timestamp) < timedelta(seconds=TTL_SECONDS)
+        logger.info(f"Recent response check for {url}: {recent} (Type: {report_type})")
+        return recent
+    return False
 
-def get_cached_response(url: str) -> str:
-    normalized_url = normalize_url(url)
-    logger.info(f"Retrieving cached response for URL: {url}")
-    return CACHE[normalized_url]["response"]
+def is_basic_cached(url: HttpUrl) -> bool:
+    """ Check if URL is cached in the basic report cache """
+    cached = normalize_url(url) in basic_cache
+    logger.info(f"Basic cache existence check for {url}: {cached}")
+    return cached
 
-def save_response(url: str, response: str):
-    normalized_url = normalize_url(url)
-    CACHE[normalized_url] = {
+def get_cached_response(url: HttpUrl, report_type: str) -> str:
+    """ Retrieve cached response based on report_type """
+    cache = basic_cache if report_type == "basic" else deep_cache
+    logger.info(f"Fetching cached response for {url} (Type: {report_type})")
+    return cache[normalize_url(url)]["response"]
+
+def save_response(url: HttpUrl, report_type: str, response: str):
+    """ Save response to the appropriate cache (basic or deep) """
+    cache = basic_cache if report_type == "basic" else deep_cache
+    cache[normalize_url(url)] = {
         "response": response,
         "timestamp": datetime.now().isoformat()
     }
-    logger.info(f"Saved new response to cache for URL: {url}")
-    save_cache()
+    save_cache(cache, BASIC_CACHE_FILE if report_type == "basic" else DEEP_CACHE_FILE)
