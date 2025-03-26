@@ -45,7 +45,7 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
         
         # Send verification email if not verified yet
         # Assuming 'verify_email_token' will return False if the email isn't verified yet
-        token = generate_verification_code()  # Generate a unique token
+        token = generate_verification_code(request.email)  # Generate a unique token
         background_tasks.add_task(send_verification_email(request.email, token))
         logger.info(f"Email verification initiated for {request.email}")
         return UrlResponse(output="Email verification sent. Please verify to proceed.", message="Type B: Awaiting verification")

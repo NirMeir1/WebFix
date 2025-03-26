@@ -58,17 +58,20 @@ def send_verification_email(email: str, verification_code: str):
         return None
     return True
 
-def generate_verification_code():
+def generate_verification_code(email: str):
     """
-    Generate a unique verification code (token).
+    Generate a unique verification code (token) and store it in email_tokens dictionary.
     """
-    return str(uuid.uuid4())  # Generates a unique UUID as the verification code
+    token = str(uuid.uuid4())  # Generates a unique UUID as the verification code
+    email_tokens[email] = token  # Store the token with email as key
+    return token
 
 def verify_email_token(email: str, token: str) -> bool:
     """
     Verify the email address using the token provided by the user.
     """
-    if email_tokens.get(email) == token:
+    stored_token = email_tokens.get(email)  # Retrieve the stored token for the email
+    if stored_token == token:
         logger.info(f"Email verified: {email}")
         # After successful verification, remove the token to prevent re-use
         del email_tokens[email]
