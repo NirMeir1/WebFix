@@ -8,7 +8,7 @@ from backend.cache import (
     is_recent_response,
     is_basic_cached,
 )
-from backend.email_auth import send_verification_email, verify_email, is_email_verified
+from backend.email_service import send_verification_email, generate_verification_code, verify_email_token, send_report_to_user
 from dotenv import load_dotenv
 from logging_config import setup_logging
 import logging
@@ -19,10 +19,12 @@ load_dotenv()
 
 app = FastAPI(on_startup=[initialize_caches])
 
+
 @app.get("/")
 def root():
     logger.info("Root endpoint accessed")
     return {"message": "Backend is running"}
+
 
 @app.post("/analyze-url", response_model=UrlResponse)
 async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
@@ -35,15 +37,18 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
         logger.info(f"Returning cached response for {request.url} (Type: {request.report_type})")
         return UrlResponse(output=output, message="Type A: Cached response")
 
-    # Basic -> Deep upgrade check
+    # Email verification for "deep" report
     if request.report_type == "deep":
         if not request.email:
             logger.warning("Email required but not provided for deep report")
             raise HTTPException(status_code=400, detail="Email required for deep reports")
-        if not is_email_verified(request.email):
-            background_tasks.add_task(send_verification_email, request.email, request.url)
-            logger.info(f"Email verification initiated for {request.email}")
-            return UrlResponse(output="Email verification sent. Please verify to proceed.", message="Type B: Awaiting verification")
+        
+        # Send verification email if not verified yet
+        # Assuming 'verify_email_token' will return False if the email isn't verified yet
+        token = generate_verification_code()  # Generate a unique token
+        background_tasks.add_task(send_verification_email(request.email, token))
+        logger.info(f"Email verification initiated for {request.email}")
+        return UrlResponse(output="Email verification sent. Please verify to proceed.", message="Type B: Awaiting verification")
 
     # Generate GPT response
     gpt = ChatGPTService()
@@ -57,9 +62,13 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
 
     return UrlResponse(output=output, message=message_type)
 
+
 @app.get("/verify-email")
 def email_verification(email: str, token: str):
-    if verify_email(email, token):
+    """
+    Endpoint to verify email by the token sent via the verification email.
+    """
+    if verify_email_token(email, token):
         logger.info(f"Email successfully verified: {email}")
         return {"message": "Email successfully verified."}
     else:
