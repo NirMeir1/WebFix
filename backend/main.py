@@ -48,7 +48,6 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
         token = generate_verification_code(request.email)  # Generate a unique token
         background_tasks.add_task(send_verification_email(request.email, token))
         logger.info(f"Email verification initiated for {request.email}")
-        return UrlResponse(output="Email verification sent. Please verify to proceed.", message="Type B: Awaiting verification")
 
     # Generate GPT response
     gpt = ChatGPTService()
