@@ -1,10 +1,10 @@
 from fastapi import FastAPI, HTTPException, BackgroundTasks
-from backend.schemas import UrlRequest, EmailVerificationRequest, UrlResponse
+from backend.schemas import UrlRequest, UrlResponse
 from backend.gpt_service import ChatGPTService
 from backend.email_service import send_verification_email, generate_jwt_token,decode_jwt_token, send_report_to_user
 from dotenv import load_dotenv
 from logging_config import setup_logging
-from backend.cache import normalize_url
+from backend.helper import normalize_url
 import logging
 import jwt
 
@@ -49,8 +49,8 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
         gpt_instance = ChatGPTService()
         output = await gpt_instance.generate_gpt_report(request.url, request.report_type, request.industry)
         logger.info(f"GPT response generated for URL: {request.url}")
-
         return UrlResponse(output=output, message="Type Z: Basic report generated")
+    
     except Exception as e:
         logger.error(f"Error generating GPT response: {e}")
         raise HTTPException(status_code=500, detail="Error generating product report.")

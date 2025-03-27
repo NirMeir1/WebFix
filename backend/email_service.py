@@ -22,7 +22,7 @@ ses_client = boto3.client(
 
 JWT_SECRET = os.getenv("JWT_SECRET_KEY")
 JWT_ALGORITHM = "HS256"
-FRONTEND_VERIFY_URL = "https://c83b-149-106-157-246.ngrok-free.app/verify-email"
+FRONTEND_VERIFY_URL = "https://355a-2a00-a040-1a3-aaa3-d991-de87-4dd2-ba77.ngrok-free.app/verify-email"
 
 # Create JWT token
 def generate_jwt_token(data: Dict) -> str:
@@ -34,6 +34,7 @@ def decode_jwt_token(token: str) -> Dict:
 
 # Send Verification Email
 def send_verification_email(email: str, jwt_token: str):
+    print("CURRENT VERIFY URL:", FRONTEND_VERIFY_URL)
     verify_link = f"{FRONTEND_VERIFY_URL}?token={jwt_token}"
     subject = "Verify your email address"
     body_text = f"Hello,\n\nPlease verify your email by clicking the following link:\n{verify_link}\n"

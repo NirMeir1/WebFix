@@ -1,7 +1,6 @@
 from pydantic import BaseModel, HttpUrl, EmailStr, model_validator
 from typing import Optional, ClassVar, Literal
 from email_validator import validate_email, EmailNotValidError
-from password_validator import PasswordValidator
 
 class UrlRequest(BaseModel):
     url: HttpUrl
@@ -35,25 +34,6 @@ class UrlRequest(BaseModel):
 
             except EmailNotValidError as e:
                 raise ValueError(f"Invalid email: {e}")
-        
-        return values
-
-
-class EmailVerificationRequest(BaseModel):
-    email: EmailStr
-    token: str
-
-    # Token validation using password-validator for security rules
-    @model_validator(mode="before")
-    def validate_token(cls, values):
-        token = values.get('token')
-        
-        # Token strength validation (at least 8 characters, containing digits)
-        validator = PasswordValidator()
-        validator.min(8).max(64).has().digits()
-        
-        if not validator.validate(token):
-            raise ValueError("Token must be at least 8 characters long and contain digits.")
         
         return values
 
