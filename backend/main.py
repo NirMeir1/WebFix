@@ -1,22 +1,15 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from backend.schemas import UrlRequest, UrlResponse
 from backend.gpt_service import ChatGPTService
-from backend.cache import (
-    get_cached_response,
-    save_response,
-    is_recent_response,
-    initialize_cache
-)
+from backend.email_service import send_verification_email, generate_jwt_token,decode_jwt_token, send_report_to_user
 from dotenv import load_dotenv
 from logging_config import setup_logging
+from backend.helper import normalize_url
 import logging
+import jwt
 
-# Set up logging once at the start of your application
 setup_logging()
-
-# Create a logger for this module
 logger = logging.getLogger(__name__)
-
 load_dotenv()
 
 app = FastAPI()
@@ -28,29 +21,65 @@ def root():
 
 
 @app.post("/analyze-url", response_model=UrlResponse)
-async def analyze_url(request: UrlRequest):
-    
-    logger.info(f"Initialize cache when the POST request is made")
-    initialize_cache() 
+async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
+    logger.info(f"Processing URL request: {request.url}")
 
-    logger.info(f"Analyzing URL: {request.url}")
+    request.url = normalize_url(request.url)
     
-    # Check if the response is cached
-    if is_recent_response(request.url):
-        logger.info(f"Returning cached response for URL: {request.url}")
-        return UrlResponse(output=get_cached_response(request.url))
-    
-    # If not cached, process the URL using ChatGPT
+    jwt_data = {
+        "url": request.url,
+        "report_type": request.report_type,
+        "industry": request.industry,
+        "email": request.email
+    }
+
+    jwt_token = generate_jwt_token(jwt_data)
+
+    if request.report_type == "deep":
+        if not request.email:
+            logger.warning("Email required but not provided for deep report")
+            raise HTTPException(status_code=400, detail="Email required for deep reports")
+
+        background_tasks.add_task(send_verification_email, request.email, jwt_token)
+        logger.info(f"Email verification initiated for {request.email}")
+        return UrlResponse(output="Email verification sent. Please verify to proceed.", message="Type B: Awaiting verification")
+
+    # Basic report directly generated
     try:
-        gpt = ChatGPTService()
-        logger.info(f"Generating response for URL: {request.url}")
-        output = await gpt.generate_response(request.url)
-        
-        # Save the new response
-        save_response(request.url, output)
-        logger.info(f"Response generated and saved for URL: {request.url}")
-        
-        return UrlResponse(output=output)
+        gpt_instance = ChatGPTService()
+        output = await gpt_instance.generate_gpt_report(request.url, request.report_type, request.industry)
+        logger.info(f"GPT response generated for URL: {request.url}")
+        return UrlResponse(output=output, message="Type Z: Basic report generated")
+    
     except Exception as e:
-        logger.error(f"Error generating response for URL: {request.url}, Error: {str(e)}")
-        return {"error": "An error occurred while processing the request. Please try again later."}
+        logger.error(f"Error generating GPT response: {e}")
+        raise HTTPException(status_code=500, detail="Error generating product report.")
+
+
+@app.get("/verify-email")
+async def email_verification(token: str, background_tasks: BackgroundTasks):
+    try:
+        decoded = decode_jwt_token(token)
+        email = decoded['email']
+        url = decoded['url']
+        report_type = decoded['report_type']
+        industry = decoded['industry']
+
+        logger.info(f"Email verified: {email}")
+
+        gpt_instance = ChatGPTService()
+        output = await gpt_instance.generate_gpt_report(url, report_type, industry, email)
+
+        background_tasks.add_task(send_report_to_user, email, output)
+
+        return {"message": "Email verified successfully. Report will be sent shortly."}
+
+    except jwt.ExpiredSignatureError:
+        logger.error("JWT Token expired.")
+        raise HTTPException(status_code=400, detail="Token expired.")
+    except jwt.InvalidTokenError:
+        logger.error("Invalid JWT Token.")
+        raise HTTPException(status_code=400, detail="Invalid token.")
+    except Exception as e:
+        logger.error(f"Error processing verification: {e}")
+        raise HTTPException(status_code=500, detail="Error processing verification.")

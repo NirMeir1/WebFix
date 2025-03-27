@@ -1,1 +1,5 @@
-Say - Hello world! {url}
+Say - Hello world! 
+This is the url for the website: {url}
+This is the report_type: {report_type}
+This is the industry of the user's website: {industry}
+This is the email of the user: {email}

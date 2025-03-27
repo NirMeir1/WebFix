@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from openai import AsyncOpenAI
 import logging
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +12,7 @@ class ChatGPTService:
         self.model = "gpt-3.5-turbo"
         logger.info("ChatGPTService initialized with model %s", self.model)
 
-    async def generate_response(self, url: str) -> str:
+    async def generate_response(self, url: str, report_type: str, industry: str, email: Optional[str] = None) -> str:
         logger.info(f"Generating response for URL: {url}")
 
         # Define template file path
@@ -26,9 +27,15 @@ class ChatGPTService:
         with open(template_path, "r") as file:
             template = file.read()
 
-        # Prepare system prompt
-        system_prompt = template.replace("{url}", str(url))
+        # Replace the placeholders in the template with the values
+        system_prompt = template.replace("{url}", str(url)) \
+                                .replace("{report_type}", report_type) \
+                                .replace("{industry}", industry) \
+                                .replace("{email}", str(email) if email else "")
+
+        # Print the system prompt for validation
         logger.debug(f"System prompt generated: {system_prompt[:100]}...")  # Log the first 100 chars for brevity
+        print(f"Generated System Prompt: {system_prompt}")  # Print the full system prompt for validation
 
         try:
             # Call the OpenAI API to generate the response
@@ -46,3 +53,10 @@ class ChatGPTService:
         except Exception as e:
             logger.error(f"Error generating response for URL: {url}, Error: {str(e)}")
             raise
+    
+    async def generate_gpt_report(self, url: str, report_type: str, industry: str, email: Optional[str] = None) -> str:
+        """
+        Helper function to generate a GPT response using the ChatGPTService.
+        """
+        output = await self.generate_response(url, report_type, industry, email)
+        return output
