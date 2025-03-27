@@ -53,3 +53,10 @@ class ChatGPTService:
         except Exception as e:
             logger.error(f"Error generating response for URL: {url}, Error: {str(e)}")
             raise
+    
+    async def generate_gpt_report(self, url: str, report_type: str, industry: str, email: Optional[str] = None) -> str:
+        """
+        Helper function to generate a GPT response using the ChatGPTService.
+        """
+        output = await self.generate_response(url, report_type, industry, email)
+        return output
