@@ -14,9 +14,12 @@
       "module": "uvicorn",
       "args": [
         "backend.main:app",
-        "--reload"
+        "--reload",
+        "--host", "0.0.0.0",
+        "--port", "8000"
       ],
       "justMyCode": false,
+      "console": "integratedTerminal",
       "python": "${workspaceFolder}/backend/.venv/Scripts/python.exe",
       "env": {
         "PYTHONPATH": "${workspaceFolder}/backend"
