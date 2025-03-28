@@ -5,6 +5,7 @@ from backend.email_service import send_verification_email, generate_jwt_token,de
 from dotenv import load_dotenv
 from logging_config import setup_logging
 from backend.helper import normalize_url
+from backend.redis.cache_instance import cache as run_cache
 import logging
 import jwt
 
@@ -18,6 +19,13 @@ app = FastAPI()
 def root():
     logger.info("Root endpoint accessed")
     return {"message": "Backend is running"}
+
+# Debug endpoint to get all keys in the cache
+# This is useful for debugging and monitoring the cache
+@app.get("/debug-keys")
+def get_all_keys():
+    keys = run_cache.cache.client.keys("*")
+    return {"keys": keys}
 
 
 @app.post("/analyze-url", response_model=UrlResponse)
@@ -47,7 +55,20 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
     # Basic report directly generated
     try:
         gpt_instance = ChatGPTService()
-        output = await gpt_instance.generate_gpt_report(request.url, request.report_type, request.industry)
+
+         # "_", output is used to ignore the message type for now
+        # it will return the message type in the future
+        # message is the msg type (A, B, Z) and output is the actual response.
+        _, output = await run_cache.run(
+            url=request.url,
+            report_type=request.report_type,
+            industry=request.industry,
+            email=request.email,
+            gpt_func=lambda: gpt_instance.generate_gpt_report(
+                request.url, request.report_type, request.industry
+            )
+        )
+
         logger.info(f"GPT response generated for URL: {request.url}")
         return UrlResponse(output=output, message="Type Z: Basic report generated")
     
@@ -68,7 +89,20 @@ async def email_verification(token: str, background_tasks: BackgroundTasks):
         logger.info(f"Email verified: {email}")
 
         gpt_instance = ChatGPTService()
-        output = await gpt_instance.generate_gpt_report(url, report_type, industry, email)
+
+        # "_", output is used to ignore the message type for now
+        # it will return the message type in the future
+        # message is the msg type (A, B, Z) and output is the actual response.
+        _, output = await run_cache.run(
+            url=url,
+            report_type=report_type,
+            industry=industry,
+            email=email,
+            gpt_func=lambda: gpt_instance.generate_gpt_report(
+                url, report_type, industry, email
+            )
+        )
+
 
         background_tasks.add_task(send_report_to_user, email, output)
 
