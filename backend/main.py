@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from logging_config import setup_logging
 from backend.helper import normalize_url
 from backend.redis.cache_instance import cache as run_cache
+from fastapi.responses import JSONResponse
 import logging
 import jwt
 
@@ -20,12 +21,29 @@ def root():
     logger.info("Root endpoint accessed")
     return {"message": "Backend is running"}
 
-# Debug endpoint to get all keys in the cache
-# This is useful for debugging and monitoring the cache
-@app.get("/debug-keys")
-def get_all_keys():
-    keys = run_cache.cache.client.keys("*")
-    return {"keys": keys}
+# Debug endpoint to get all keys in the cache with their values
+@app.get("/debug-keys-with-values")
+def get_all_keys_with_values():
+    client = run_cache.cache.client
+    keys = client.keys("*")
+    result = {}
+
+    for key in keys:
+        key_type = client.type(key)
+        if key_type == "string":
+            result[key] = client.get(key)
+        elif key_type == "set":
+            result[key] = list(client.smembers(key))
+        else:
+            result[key] = f"[{key_type} type not displayed]"
+
+    return JSONResponse(content=result, media_type="application/json")
+
+# Debug endpoint to delete all keys in the cache
+@app.delete("/debug-flush")
+def flush_all_keys():
+    run_cache.cache.client.flushdb()
+    return {"message": "All keys deleted from Redis"}
 
 
 @app.post("/analyze-url", response_model=UrlResponse)
