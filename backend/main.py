@@ -13,6 +13,7 @@ import jwt
 
 setup_logging()
 logger = logging.getLogger(__name__)
+
 load_dotenv()
 
 app = FastAPI()
@@ -58,6 +59,7 @@ def flush_all_keys():
 
 @app.post("/analyze-url", response_model=UrlResponse)
 async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
+    print(request.dict())  # Logs the request data
     logger.info(f"Processing URL request: {request.url}")
 
     request.url = normalize_url(request.url)

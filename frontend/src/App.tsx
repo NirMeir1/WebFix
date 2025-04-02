@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import axios from 'axios';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import axios, { AxiosError } from 'axios';
 
 // Define a type for the expected API response.
 interface ApiResponse {
@@ -14,10 +14,8 @@ const industries = [
   'Technology',
   'Finance',
   'Healthcare',
-  'Blabla',
   'Education',
-  'Real Estate',
-  'Marketing',
+  'Fashion',
   'Other'
 ];
 
@@ -39,6 +37,20 @@ const App: React.FC = () => {
   const [error, setError] = useState('');
   const [response, setResponse] = useState<ApiResponse | null>(null);
   const [reportType, setReportType] = useState<'basic' | 'deep'>('basic');
+  const [message, setMessage] = useState(''); // Add this line
+
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    // Update this URL to match your FastAPI backend URL
+    axios.get('http://127.0.0.1:8000')
+      .then(response => {
+        setMessage(response.data.message);
+      })
+      .catch(error => {
+        console.error("There was an error fetching the message!", error);
+      });
+  }, []);
 
   // Submit handler using a form submission event.
   const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
@@ -46,6 +58,16 @@ const App: React.FC = () => {
     setError('');
     setResponse(null);
 
+    if (!reportType || (reportType !== 'basic' && reportType !== 'deep')) {
+      setError('Invalid report type.');
+      return;
+    }
+
+    if (reportType === 'deep' && !email) {
+      setError('Email is required for a deep report.');
+      return;
+    }
+    
     // Validate URL.
     if (!isValidUrl(url)) {
       setError('Please enter a valid URL.');
@@ -54,12 +76,11 @@ const App: React.FC = () => {
     
     // Validate email for deep report.
     if (reportType === 'deep' && !email) {
-        setError('Email is required for a deep report.');
-        return;
-      }
+      setError('Email is required for a deep report.');
+      return;
+    }
       
-
-    const normalizedIndustry = industry === 'Other' ? 'E-COMMERCE' : industry;
+    const normalizedIndustry = (industry === 'Other' ? 'e-commerce' : industry.toLowerCase());
 
     // Set up headers. Include JWT in deep report requests if available.
     const headers: Record<string, string> = {};
@@ -72,10 +93,17 @@ const App: React.FC = () => {
 
     setLoading(true);
     try {
-        const res = await axios.post('/api/analyze-url', {
+        console.log({
+          url,
+          industry: normalizedIndustry,
+          email,
+          reportType
+        });
+        const res = await axios.post('http://127.0.0.1:8000/analyze-url', {
             url,
             industry: normalizedIndustry,
             email,
+            report_type: reportType
             });
         const data: ApiResponse = res.data;
 
@@ -84,9 +112,17 @@ const App: React.FC = () => {
           }
           
       setResponse(data);
+
     } catch (err) {
+      const axiosError = err as AxiosError;
+
       setError('An error occurred while fetching the data.');
-      console.error(err);
+      console.error('Request failed:', axiosError);
+
+      if (axiosError.response) {
+        console.error('Status:', axiosError.response.status);
+        console.error('Data:', axiosError.response.data);
+      }
     } finally {
       setLoading(false);
     }
@@ -95,7 +131,11 @@ const App: React.FC = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl mb-4">URL Analysis</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+
+      {/* Render the message here */}
+      <h1>{message}</h1>  {/* Display the message from the backend */}
+
+      <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="url" className="block text-lg">
             URL:
@@ -140,24 +180,29 @@ const App: React.FC = () => {
           />
         </div>
         <div className="flex space-x-4">
-            <button
-                type="submit"
-                disabled={loading}
-                onClick={() => setReportType('basic')}
-                title="Get a quick basic report."
-                className="bg-blue-500 text-white p-2 rounded"
-            >
-                {loading ? 'Just a sec...' : 'Basic Report'}
-            </button>
-            <button
-                type="submit"
-                disabled={loading}
-                onClick={() => setReportType('deep')}
-                title="Get a detailed deep report (email required)."
-                className="bg-green-500 text-white p-2 rounded"
-            >
-                {loading ? 'Just a sec...' : 'Deep Report'}
-            </button>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => {
+              setReportType('basic');
+              setTimeout(() => formRef.current?.requestSubmit(), 0);
+            }}
+            className="bg-blue-500 text-white p-2 rounded"
+          >
+            {loading ? 'Just a sec...' : 'Basic Report'}
+          </button>
+
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => {
+              setReportType('deep');
+              setTimeout(() => formRef.current?.requestSubmit(), 0);
+            }}
+            className="bg-green-500 text-white p-2 rounded"
+          >
+            {loading ? 'Just a sec...' : 'Deep Report'}
+          </button>
         </div>
 
       </form>
