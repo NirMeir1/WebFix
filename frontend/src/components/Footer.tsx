@@ -12,6 +12,11 @@ const Footer: React.FC = () => (
       <span className="font-semibold">Nir Meir</span>
       <span>Nir@bottomline.com</span>
     </div>
+    <div className="border-l border-gray-300 h-16"></div>
+    <div className="flex flex-col items-center">
+      <span className="font-semibold">Michal</span>
+      <span>Michal@bottomline.com</span>
+    </div>
     <nav className="flex gap-4">
       <img src="/icons/facebook.svg" className="w-8 h-8 cursor-pointer" />
       <img src="/icons/instagram.svg" className="w-8 h-8 cursor-pointer" />
