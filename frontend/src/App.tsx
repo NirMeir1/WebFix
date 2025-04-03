@@ -3,10 +3,21 @@ import axios, { AxiosError } from 'axios';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import UrlForm from './components/UrlForm';
-import ResponseViewer from './components/ResponseViewer';
+//import ResponseViewer from './components/ResponseViewer';
+import ReportPage from './components/reports/ReportPage';
 
 // Define your industries once and pass them as props
 const industries = ['Technology', 'Finance', 'Healthcare', 'Education', 'Fashion', 'Other'];
+
+// Simple URL validator using the URL constructor.
+const isValidUrl = (url: string): boolean => {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 const App: React.FC = () => {
   const [url, setUrl] = useState('');
@@ -17,6 +28,7 @@ const App: React.FC = () => {
   const [response, setResponse] = useState(null);
   const [reportType, setReportType] = useState<'basic' | 'deep'>('basic');
   const [message, setMessage] = useState('');
+  const [showReport, setShowReport] = useState(false);
 
   // Fetch an initial backend message (optional)
   useEffect(() => {
@@ -31,19 +43,26 @@ const App: React.FC = () => {
     setError('');
     setResponse(null);
 
-    // Basic validation
+    // Validate URL.
+    if (!isValidUrl(url)) {
+      setError('Please enter a valid URL.');
+      return;
+    }
+
+    // Basic validation for deep report type.
     if (reportType === 'deep' && !email) {
       setError('Email is required for a deep report.');
       return;
     }
 
     setLoading(true);
+    setShowReport(false);  // Reset report display
 
     try {
       const res = await axios.post('http://127.0.0.1:8000/analyze-url', {
         url,
         industry: industry === 'Other' ? 'e-commerce' : industry.toLowerCase(),
-        email,
+        ...(email && { email }), //add the email key to the request body only if email is truthy (i.e., not null, undefined, or an empty string).
         report_type: reportType,
       });
 
@@ -52,6 +71,8 @@ const App: React.FC = () => {
       }
 
       setResponse(res.data);
+      setShowReport(true);  // Show report after successful fetch
+      
     } catch (err) {
       const axiosError = err as AxiosError;
       setError('An error occurred while fetching data.');
@@ -59,38 +80,39 @@ const App: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [url, industry, email, reportType]);
+  }, [url, industry, email, reportType]); 
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-
-      <main className="flex-1 container mx-auto px-4 py-8 text-center">
-        {message && <div className="mb-4 text-green-700 font-semibold text-lg">{message}</div>}
-
-        <h2 className="text-3xl mb-6 font-semibold">URL Analysis</h2>
-
-        <UrlForm
-          url={url}
-          industry={industry}
-          email={email}
-          loading={loading}
-          reportType={reportType}
-          industries={industries}
-          setUrl={setUrl}
-          setIndustry={setIndustry}
-          setEmail={setEmail}
-          setReportType={setReportType}
-          onSubmit={handleSubmit}
-        />
-
-        {error && <p className="text-red-500 mt-4 font-semibold">{error}</p>}
-
-        {response && <ResponseViewer response={response} />}
-      </main>
-
-      <Footer />
-    </div>
+    <>
+      {!showReport ? (
+        <div className="flex flex-col min-h-screen">
+          <Header />
+          <main className="flex-1 container mx-auto px-4 py-8 text-center">
+            {message && <div className="mb-4 text-green-700 font-semibold text-lg">{message}</div>}
+            <h2 className="text-3xl mb-6 font-semibold">URL Analysis</h2>
+  
+            <UrlForm
+              url={url}
+              industry={industry}
+              email={email}
+              loading={loading}
+              reportType={reportType}
+              industries={industries}
+              setUrl={setUrl}
+              setIndustry={setIndustry}
+              setEmail={setEmail}
+              setReportType={setReportType}
+              onSubmit={handleSubmit}
+            />
+  
+            {error && <p className="text-red-500 mt-4 font-semibold">{error}</p>}
+          </main>
+          <Footer />
+        </div>
+      ) : (
+        <ReportPage url={url} response={response} />
+      )}
+    </>
   );
 };
 
