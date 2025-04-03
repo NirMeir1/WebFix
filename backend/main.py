@@ -7,14 +7,25 @@ from logging_config import setup_logging
 from backend.helper import normalize_url
 from backend.redis.cache_instance import cache as run_cache
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 import logging
 import jwt
 
 setup_logging()
 logger = logging.getLogger(__name__)
+
 load_dotenv()
 
 app = FastAPI()
+
+# 2. Add the CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins. You can restrict this for better security.
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allows all headers
+)
 
 @app.get("/")
 def root():
@@ -48,6 +59,7 @@ def flush_all_keys():
 
 @app.post("/analyze-url", response_model=UrlResponse)
 async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
+    print(request.dict())  # Logs the request data
     logger.info(f"Processing URL request: {request.url}")
 
     request.url = normalize_url(request.url)
