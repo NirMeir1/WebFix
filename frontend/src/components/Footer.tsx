@@ -18,11 +18,11 @@ const Footer: React.FC = () => (
       <span>Michal@bottomline.com</span>
     </div>
     <nav className="flex gap-4">
+      <img src="/icons/share.svg" className="w-8 h-8 cursor-pointer" />
       <img src="/icons/facebook.svg" className="w-8 h-8 cursor-pointer" />
       <img src="/icons/instagram.svg" className="w-8 h-8 cursor-pointer" />
       <img src="/icons/phone.svg" className="w-8 h-8 cursor-pointer" />
       <img src="/icons/email.svg" className="w-8 h-8 cursor-pointer" />
-      <img src="/icons/share.svg" className="w-8 h-8 cursor-pointer" />
     </nav>
   </footer>
 );

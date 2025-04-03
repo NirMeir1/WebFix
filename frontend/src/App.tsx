@@ -87,9 +87,11 @@ const App: React.FC = () => {
       {!showReport ? (
         <div className="flex flex-col min-h-screen">
           <Header />
+          <div className="flex justify-center mt-4 mb-2">
+          <img src="/logo.png" alt="Logo" className="w-[300px] h-auto" />
+          </div>
           <main className="flex-1 container mx-auto px-4 py-8 text-center">
             {message && <div className="mb-4 text-green-700 font-semibold text-lg">{message}</div>}
-            <h2 className="text-3xl mb-6 font-semibold">URL Analysis</h2>
   
             <UrlForm
               url={url}
