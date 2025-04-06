@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 interface ReportItemProps {
   title: string;
   rating: 'green' | 'orange' | 'yellow' | 'red';
+  content: string;
 }
 
 const ratingColors = {
@@ -12,7 +13,7 @@ const ratingColors = {
   red: 'bg-red-500',
 };
 
-const ReportItem: React.FC<ReportItemProps> = ({ title, rating }) => {
+const ReportItem: React.FC<ReportItemProps> = ({ title, rating, content }) => {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -30,7 +31,7 @@ const ReportItem: React.FC<ReportItemProps> = ({ title, rating }) => {
 
       {expanded && (
         <div className="p-4 text-gray-600 text-sm bg-gray-100">
-          Detailed insights for <strong>{title}</strong> will appear here.
+          {content} {/* Display dynamic content here */}
         </div>
       )}
     </div>
