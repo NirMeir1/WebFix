@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class ChatGPTService:
     def __init__(self):
         self.client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        self.model = "gpt-3.5-turbo"
+        self.model = "gpt-4o"
         logger.info("ChatGPTService initialized with model %s", self.model)
 
     async def generate_response(self, url: str, report_type: str, industry: str, email: Optional[str] = None) -> str:
@@ -39,17 +39,22 @@ class ChatGPTService:
 
         try:
             # Call the OpenAI API to generate the response
-            response = await self.client.chat.completions.create(
+            response = await self.client.responses.create(
                 model=self.model,
-                messages=[{"role": "system", "content": system_prompt}],
-                max_tokens=5,
-                temperature=0.2,
-                top_p=1.0,
-                frequency_penalty=0.2,
-                presence_penalty=0
+                tools=[{"type": "web_search_preview", "search_context_size": "high"}],
+                tool_choice={"type": "web_search_preview"},
+                input=system_prompt
+                # max_tokens=5,
+                # temperature=0.2,
+                # top_p=1.0,
+                # frequency_penalty=0.2,
+                # presence_penalty=0
             )
             logger.info(f"Response generated for URL: {url}")
-            return response.choices[0].message.content.strip()
+
+            assistant_reply = response.choices[0].message.content[0].text.strip()
+            return assistant_reply
+
         except Exception as e:
             logger.error(f"Error generating response for URL: {url}, Error: {str(e)}")
             raise
