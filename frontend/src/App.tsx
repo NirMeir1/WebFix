@@ -25,7 +25,7 @@ const App: React.FC = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [response, setResponse] = useState(null);
+  const [response, setResponse] = useState<string | null>(null);
   const [reportType, setReportType] = useState<'basic' | 'deep'>('basic');
   const [message, setMessage] = useState('');
   const [showReport, setShowReport] = useState(false);
@@ -39,6 +39,7 @@ const App: React.FC = () => {
 
   // Handle form submission logic
   const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log('Submitting...');
     e.preventDefault();
     setError('');
     setResponse(null);
@@ -59,12 +60,15 @@ const App: React.FC = () => {
     setShowReport(false);  // Reset report display
 
     try {
+      console.log('Sending request...');
+      console.log('Report Type:', reportType);
       const res = await axios.post('http://127.0.0.1:8000/analyze-url', {
         url,
         industry: industry === 'Other' ? 'e-commerce' : industry.toLowerCase(),
         ...(email && { email }), //add the email key to the request body only if email is truthy (i.e., not null, undefined, or an empty string).
         report_type: reportType,
       });
+      console.log('Request successful:', res);
 
       if (res.data.token) {
         localStorage.setItem('jwt', res.data.token);
@@ -112,7 +116,7 @@ const App: React.FC = () => {
           <Footer />
         </div>
       ) : (
-        <ReportPage url={url} response={response} />
+        <ReportPage url={url} response={response || ''} />
       )}
     </>
   );

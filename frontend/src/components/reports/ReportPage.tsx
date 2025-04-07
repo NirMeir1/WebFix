@@ -5,10 +5,10 @@ import ReportDetails from './ReportDetails';
 
 interface ReportPageProps {
   url: string;
-  response: unknown;
+  response: string;
 }
 
-const ReportPage: React.FC<ReportPageProps> = ({ url }) => (
+const ReportPage: React.FC<ReportPageProps> = ({ url, response }) => (
   <div className="flex flex-col min-h-screen">
     <Header />
     
@@ -17,7 +17,7 @@ const ReportPage: React.FC<ReportPageProps> = ({ url }) => (
         CRO report for <a href={url} className="text-blue-500 underline">{url}</a>
       </h2>
 
-      <ReportDetails />
+      <ReportDetails reportText={response}/>
     </main>
 
     <Footer />
