@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 import jwt
+import time
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -59,7 +60,7 @@ def flush_all_keys():
 
 @app.post("/analyze-url", response_model=UrlResponse)
 async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
-    print(request.dict())  # Logs the request data
+    start_time = time.time()
     logger.info(f"Processing URL request: {request.url}")
 
     request.url = normalize_url(request.url)
@@ -100,6 +101,12 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
         )
 
         logger.info(f"GPT response generated for URL: {request.url}")
+
+         # Measure time before returning
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Time taken: {elapsed_time:.4f} seconds")
+
         return UrlResponse(output=output, message="Type Z: Basic report generated")
     
     except Exception as e:

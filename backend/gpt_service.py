@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class ChatGPTService:
     def __init__(self):
         self.client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        self.model = "gpt-4o"
+        self.model = "gpt-4o-mini"
         logger.info("ChatGPTService initialized with model %s", self.model)
 
     async def generate_response(self, url: str, report_type: str, industry: str, email: Optional[str] = None) -> str:
@@ -24,7 +24,7 @@ class ChatGPTService:
             raise FileNotFoundError(f"Template file not found at {template_path}")
         
         # Read the template file
-        with open(template_path, "r") as file:
+        with open(template_path, "r", encoding="utf-8") as file:
             template = file.read()
 
         # Replace the placeholders in the template with the values
@@ -38,10 +38,9 @@ class ChatGPTService:
         print(f"Generated System Prompt: {system_prompt}")  # Print the full system prompt for validation
 
         try:
-            # Call the OpenAI API to generate the response
             response = await self.client.responses.create(
                 model=self.model,
-                tools=[{"type": "web_search_preview", "search_context_size": "high"}],
+                tools=[{"type": "web_search_preview", "search_context_size": "medium"}],
                 tool_choice={"type": "web_search_preview"},
                 input=system_prompt
                 # max_tokens=5,
@@ -52,7 +51,10 @@ class ChatGPTService:
             )
             logger.info(f"Response generated for URL: {url}")
 
-            assistant_reply = response.choices[0].message.content[0].text.strip()
+            assistant_reply = response.output[1].content[0].text.strip()
+
+            logger.info(f"Assistant Reply:\n{assistant_reply}")
+
             return assistant_reply
 
         except Exception as e:
