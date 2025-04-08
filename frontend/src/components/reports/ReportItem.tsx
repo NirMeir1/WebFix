@@ -17,10 +17,10 @@ const ReportItem: React.FC<ReportItemProps> = ({ title, rating, content }) => {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="mb-4 rounded-lg overflow-hidden shadow-lg">
+    <div className="mb-4 rounded-lg overflow-hidden shadow-md w-full max-w-[1500px]">
       <div
         onClick={() => setExpanded(!expanded)}
-        className="flex items-center justify-between cursor-pointer py-3 px-4 bg-blue-50 hover:bg-blue-100 transition-colors border-b"
+        className="flex items-center justify-between cursor-pointer py-3 px-4 bg-blue-50 hover:bg-blue-100 transition-colors border-b w-full"
       >
         <div className="flex items-center">
           {/* Rotate the plus icon when expanded */}
