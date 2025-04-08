@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios, { AxiosError } from 'axios';
-import Header from './components/Header';
-import Footer from './components/Footer';
 import UrlForm from './components/UrlForm';
-//import ResponseViewer from './components/ResponseViewer';
 import ReportPage from './components/reports/ReportPage';
+import PageLayout from './components/layout/PageLayout';
 
 // Define your industries once and pass them as props
 const industries = ['Technology', 'Finance', 'Healthcare', 'Education', 'Fashion', 'Other'];
@@ -89,14 +87,13 @@ const App: React.FC = () => {
   return (
     <>
       {!showReport ? (
-        <div className="flex flex-col min-h-screen">
-          <Header />
+        <PageLayout>
           <div className="flex justify-center mt-4 mb-2">
-          <img src="/logo.png" alt="Logo" className="w-[300px] h-auto" />
+            <img src="/logo.png" alt="Logo" className="w-[300px] h-auto" />
           </div>
           <main className="flex-1 container mx-auto px-4 py-8 text-center">
             {message && <div className="mb-4 text-green-700 font-semibold text-lg">{message}</div>}
-  
+        
             <UrlForm
               url={url}
               industry={industry}
@@ -110,11 +107,11 @@ const App: React.FC = () => {
               setReportType={setReportType}
               onSubmit={handleSubmit}
             />
-  
+        
             {error && <p className="text-red-500 mt-4 font-semibold">{error}</p>}
           </main>
-          <Footer />
-        </div>
+      </PageLayout>
+      
       ) : (
         <ReportPage url={url} response={response || ''} />
       )}

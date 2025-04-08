@@ -105,7 +105,7 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({ reportText }) => {
   }, [reportText]);
 
   return (
-    <div className="border-t border-gray-200">
+    <div className="w-full max-w-2xl mx-auto">
       {sections.map(section => (
         <ReportItem
           key={section.title}

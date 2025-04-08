@@ -1,7 +1,6 @@
 import React from 'react';
-import Header from '../Header';
-import Footer from '../Footer';
 import ReportDetails from './ReportDetails';
+import PageLayout from '../layout/PageLayout';
 
 interface ReportPageProps {
   url: string;
@@ -9,19 +8,22 @@ interface ReportPageProps {
 }
 
 const ReportPage: React.FC<ReportPageProps> = ({ url, response }) => (
-  <div className="flex flex-col min-h-screen">
-    <Header />
-    
-    <main className="flex-1 container mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold text-left mb-4">
-        CRO report for <a href={url} className="text-blue-500 underline">{url}</a>
-      </h2>
+  <PageLayout>
+    <div className="flex flex-col items-center px-4 py-8">
+      <div className="w-full max-w-4xl bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-center mb-6">
+          CRO report for <a href={url} className="text-blue-500 underline break-words">{url}</a>
+        </h2>
 
-      <ReportDetails reportText={response}/>
-    </main>
+        <div className="flex justify-center gap-4 mb-6 flex-wrap">
+          <button className="bg-green-600 text-white font-semibold px-4 py-2 rounded shadow hover:bg-green-700 transition">Desktop</button>
+          <button className="bg-green-600 text-white font-semibold px-4 py-2 rounded shadow hover:bg-green-700 transition">Mobile</button>
+        </div>
 
-    <Footer />
-  </div>
+        <ReportDetails reportText={response} />
+      </div>
+    </div>
+  </PageLayout>
 );
 
 export default ReportPage;
