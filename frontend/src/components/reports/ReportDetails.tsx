@@ -12,9 +12,9 @@ const defaultSections: Section[] = [
   { title: 'HOME PAGE', rating: 'green', content: 'Home' },
   { title: 'CATEGORY PAGE', rating: 'orange', content: 'Category' },
   { title: 'PRODUCT PAGE', rating: 'yellow', content: 'Product' },
-  { title: 'CHECKOUT PAGE', rating: 'red', content: 'Checkout' },
-  { title: 'NAVIGATION', rating: 'orange', content: 'Navigation' },
-  { title: 'SUMMARY', rating: 'orange', content: 'Summary' },
+  { title: 'CART PAGE', rating: 'red', content: 'Cart' },
+  { title: 'CHECKOUT PAGE', rating: 'orange', content: 'Checkout' },
+  { title: 'THANK YOU PAGE', rating: 'orange', content: 'Thanks' },
 ];
 
 // Clean the text by normalizing newlines and trimming each line.
@@ -46,9 +46,9 @@ function parseDynamicContent(rawText: unknown): { [key: string]: string } {
     'HOME PAGE',
     'CATEGORY PAGE',
     'PRODUCT PAGE',
+    'CART PAGE',
     'CHECKOUT PAGE',
-    'NAVIGATION',
-    'SUMMARY',
+    'THANK YOU PAGE',
   ]);
 
   let currentKey: string | null = null;
