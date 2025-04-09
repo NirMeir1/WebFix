@@ -1,32 +1,64 @@
 import React from 'react';
 import ReportDetails from './ReportDetails';
 import PageLayout from '../layout/PageLayout';
+import { ArrowLeft } from 'lucide-react';
 
 interface ReportPageProps {
   url: string;
   response: string;
 }
 
-const ReportPage: React.FC<ReportPageProps> = ({ url, response }) => (
-  <PageLayout>
-    {/* Heading moved to left */}
-    <div className="w-full px-8 pt-8">
-      <h2 className="text-xl sm:text-2xl font-bold mb-4">
-        CRO report for <a href={url} className="text-blue-500 underline break-words">{url}</a>
-      </h2>
-    </div>
+const ReportPage: React.FC<ReportPageProps> = ({ url, response }) => {
+  return (
+    <PageLayout>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-8 pt-8 pb-12">
+        {/* Left Column (Report Content) */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Back Button */}
+          <button
+            onClick={() => window.location.reload()}
+            className="flex items-center text-blue-600 hover:text-blue-800 font-medium mb-4"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Take me back
+          </button>
 
-    {/* Centered buttons */}
-    <div className="flex justify-center gap-4 mb-6">
-      <button className="bg-green-600 text-white font-semibold px-4 py-2 rounded shadow hover:bg-green-700 transition">Desktop</button>
-      <button className="bg-green-600 text-white font-semibold px-4 py-2 rounded shadow hover:bg-green-700 transition">Mobile</button>
-    </div>
+          {/* URL Heading */}
+          <h2 className="text-xl sm:text-2xl font-bold">
+            CRO report for{' '}
+            <a href={url} className="text-blue-500 underline break-words">
+              {url}
+            </a>
+          </h2>
 
-    {/* Left-aligned report content */}
-    <div className="px-8 pb-12">
-      <ReportDetails reportText={response} />
-    </div>
-  </PageLayout>
-);
+          {/* Device Toggle Buttons */}
+          <div className="flex gap-4 mt-2">
+            <button className="bg-green-600 text-white font-semibold px-4 py-2 rounded shadow hover:bg-green-700 transition">
+              Desktop
+            </button>
+            <button className="bg-green-600 text-white font-semibold px-4 py-2 rounded shadow hover:bg-green-700 transition">
+              Mobile
+            </button>
+          </div>
+
+          {/* Report Sections */}
+          <ReportDetails reportText={response} />
+        </div>
+
+        {/* Right Column (Screenshot Placeholder) */}
+        <div className="hidden lg:block">
+          <div className="border rounded-2xl shadow-lg overflow-hidden">
+            <div className="bg-gray-100 text-center py-2 font-medium text-gray-600">
+              Mobile Screenshot
+            </div>
+            <div className="aspect-[9/18] bg-gray-200 flex items-center justify-center text-gray-500">
+              Image Placeholder
+            </div>
+          </div>
+        </div>
+      </div>
+    </PageLayout>
+  );
+};
 
 export default ReportPage;

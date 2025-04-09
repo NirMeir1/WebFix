@@ -14,7 +14,7 @@ const Footer: React.FC = () => (
     </div>
     <div className="border-l border-gray-300 h-16"></div>
     <div className="flex flex-col items-center">
-      <span className="font-semibold">Michal</span>
+      <span className="font-semibold">Michal Raviv</span>
       <span>Michal@bottomline.com</span>
     </div>
     <nav className="flex gap-4">

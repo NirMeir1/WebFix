@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ReportItemProps {
   title: string;
@@ -22,18 +23,15 @@ const ReportItem: React.FC<ReportItemProps> = ({ title, rating, content }) => {
         onClick={() => setExpanded(!expanded)}
         className="flex items-center justify-between cursor-pointer py-3 px-4 bg-blue-50 hover:bg-blue-100 transition-colors border-b w-full"
       >
-        <div className="flex items-center">
-          {/* Rotate the plus icon when expanded */}
-          <span
-            className={`text-base sm:text-lg font-semibold text-gray-800 ${
-              expanded ? 'rotate-45' : ''
-            }`}
-          >
-            +
-          </span>
-          <span className="text-xl font-medium">{title}</span>
+        <div className="text-xl font-medium text-gray-800">{title}</div>
+        <div className="flex items-center gap-4">
+          {expanded ? (
+            <ChevronUp className="w-5 h-5 text-gray-700" />
+          ) : (
+            <ChevronDown className="w-5 h-5 text-gray-700" />
+          )}
+          <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full ${ratingColors[rating]}`}></div>
         </div>
-        <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full ${ratingColors[rating]}`}></div>
       </div>
 
       {expanded && (
@@ -41,10 +39,7 @@ const ReportItem: React.FC<ReportItemProps> = ({ title, rating, content }) => {
           {content
             .split('\n')
             .map((line, i) => {
-              // Replace starting dash(es) with bullet point and trim
               const cleanedLine = line.replace(/^\s*-{1,2}\s*/, '• ');
-
-              // Split the line into parts to find bold segments
               const parts = cleanedLine.split(/(\*\*.*?\*\*)/g);
 
               return (
