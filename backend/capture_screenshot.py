@@ -1,42 +1,41 @@
-import os
+import base64
 import sys
-import uuid
 import logging
 from playwright.sync_api import sync_playwright
 
 logger = logging.getLogger(__name__)
 
-def capture_screenshot(url: str) -> str:
-    screenshot_dir = "static/screenshots"
-    os.makedirs(screenshot_dir, exist_ok=True)
-
-    filename = f"mobile_{uuid.uuid4()}.png"
-    path = os.path.join(screenshot_dir, filename)
-
+def capture_screenshot_base64(url: str) -> str:
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             context = browser.new_context(
                 viewport={"width": 360, "height": 700},
-                device_scale_factor=1,      # High-resolution look
+                device_scale_factor=2,
                 is_mobile=True,
                 has_touch=True
             )
             page = context.new_page()
-            page.goto(url, timeout=20000)      # max page load
-            page.wait_for_timeout(3000)        # max for visible render
-            page.screenshot(path=path)         # Only visible viewport (fast)
+            page.goto(url, timeout=10000)
+            page.wait_for_timeout(1000)  # minimal wait for speed
+
+            # Capture screenshot directly as bytes (in-memory)
+            screenshot_bytes = page.screenshot(type='png')
             browser.close()
 
-        logger.info(f"Screenshot saved at {path}")
-        print(path, end="")  # Output path for subprocess
-        return path
+            # Convert to Base64 immediately
+            screenshot_b64 = base64.b64encode(screenshot_bytes).decode('utf-8')
+            return screenshot_b64
+
     except Exception as e:
-        logger.error(f"Screenshot failed for {url}: {str(e)}")
+        logger.error(f"Screenshot capture failed for {url}: {e}")
         return ""
+    
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        capture_screenshot(sys.argv[1])
+        result = capture_screenshot_base64(sys.argv[1])
+        if result:
+            print(result, end="")  # ✅ Send base64 to stdout (no newline)
     else:
         print("No URL provided", file=sys.stderr)

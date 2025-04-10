@@ -42,7 +42,13 @@ class UrlRequest(BaseModel):
         
         return values
 
-
 class UrlResponse(BaseModel):
     output: str
+    screenshot_base64: str
     message: str
+
+# class ScreenshotRequest(BaseModel):
+#     url: str
+
+# class ScreenshotResponse(BaseModel):
+#     screenshot_base64: str

@@ -27,6 +27,8 @@ const App: React.FC = () => {
   const [reportType, setReportType] = useState<'basic' | 'deep'>('basic');
   const [message, setMessage] = useState('');
   const [showReport, setShowReport] = useState(false);
+  const [screenshot, setScreenshot] = useState('');
+
 
   // Fetch an initial backend message (optional)
   useEffect(() => {
@@ -73,6 +75,7 @@ const App: React.FC = () => {
       }
 
       setResponse(res.data);
+      setScreenshot(`data:image/png;base64,${res.data.screenshot_base64}`);
       setShowReport(true);  // Show report after successful fetch
       
     } catch (err) {
@@ -110,7 +113,7 @@ const App: React.FC = () => {
       </PageLayout>
       
       ) : (
-        <ReportPage url={url} response={response || ''} />
+        <ReportPage url={url} response={response || ''} screenshot={screenshot} />
       )}
     </>
   );

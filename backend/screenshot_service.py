@@ -4,7 +4,7 @@ import sys
 
 logger = logging.getLogger(__name__)
 
-def run_screenshot_subprocess(url: str):
+def run_screenshot_subprocess(url: str) -> str:
     try:
         result = subprocess.run(
             [sys.executable, "backend/capture_screenshot.py", url],
@@ -12,8 +12,8 @@ def run_screenshot_subprocess(url: str):
             text=True,
             check=True
         )
-        screenshot_path = result.stdout.strip()
-        logger.info(f"Screenshot saved: {screenshot_path}")
+        logger.info("Screenshot completed")
+        return result.stdout.strip()
     except subprocess.CalledProcessError as e:
         logger.error(f"Screenshot subprocess failed: {e.stderr.strip()}")
     except Exception as e:

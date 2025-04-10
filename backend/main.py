@@ -3,12 +3,12 @@ from backend.schemas import UrlRequest, UrlResponse
 from backend.gpt_service import ChatGPTService
 from backend.email_service import send_verification_email, generate_jwt_token,decode_jwt_token, send_report_to_user
 from dotenv import load_dotenv
+from backend.screenshot_service import run_screenshot_subprocess
 from logging_config import setup_logging
 from backend.helper import normalize_url
 from backend.redis.cache_instance import cache as run_cache
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from screenshot_service import run_screenshot_subprocess
 import logging
 import jwt
 import time
@@ -20,7 +20,7 @@ load_dotenv()
 
 app = FastAPI()
 
-# 2. Add the CORS middleware
+# Add the CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allows all origins. You can restrict this for better security.
@@ -66,7 +66,12 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
 
     request.url = normalize_url(request.url)
 
-    background_tasks.add_task(run_screenshot_subprocess,request.url)
+    # screenshot_b64 = capture_screenshot_base64(request.url)
+    # if not screenshot_b64:
+    #     raise HTTPException(status_code=500, detail="Failed to generate screenshot.")
+    # ScreenshotResponse(screenshot_base64=screenshot_b64)
+
+    # background_tasks.add_task(run_screenshot_subprocess,request.url)
     
     jwt_data = {
         "url": request.url,
@@ -105,12 +110,18 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
 
         logger.info(f"GPT response generated for URL: {request.url}")
 
+        screenshot_b64 = run_screenshot_subprocess(request.url)
+
          # Measure time before returning
         end_time = time.time()
         elapsed_time = end_time - start_time
         print(f"Time taken: {elapsed_time:.4f} seconds")
 
-        return UrlResponse(output=output, message="Type Z: Basic report generated")
+        return UrlResponse(
+            output=output,
+            message="Type Z: Basic report generated, Screenshot loading...",
+            screenshot_base64=screenshot_b64
+        )
     
     except Exception as e:
         logger.error(f"Error generating GPT response: {e}")

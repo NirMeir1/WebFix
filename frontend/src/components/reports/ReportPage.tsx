@@ -6,9 +6,10 @@ import { ArrowLeft } from 'lucide-react';
 interface ReportPageProps {
   url: string;
   response: string;
+  screenshot: string;
 }
 
-const ReportPage: React.FC<ReportPageProps> = ({ url, response }) => {
+const ReportPage: React.FC<ReportPageProps> = ({ url, response, screenshot }) => {
   return (
     <PageLayout>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-8 pt-8 pb-12">
@@ -51,8 +52,12 @@ const ReportPage: React.FC<ReportPageProps> = ({ url, response }) => {
             <div className="bg-gray-100 text-center py-2 font-medium text-gray-600">
               Mobile Screenshot
             </div>
-            <div className="aspect-[9/18] bg-gray-200 flex items-center justify-center text-gray-500">
-              Image Placeholder
+            <div className="aspect-[9/16] bg-gray-200 flex items-center justify-center text-gray-500 rounded-xl overflow-hidden shadow">
+              {!screenshot ? (
+                'Loading...'
+              ) : (
+                <img src={screenshot} alt="Screenshot" className="object-cover w-full h-full" />
+              )}
             </div>
           </div>
         </div>
