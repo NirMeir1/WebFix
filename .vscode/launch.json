@@ -10,7 +10,7 @@
       
       {
         "name": "Run FastAPI",
-        "type": "python",
+        "type": "debugpy",
         "request": "launch",
         "module": "uvicorn",
         "args": [
@@ -18,7 +18,7 @@
           "--reload"
         ],
         "justMyCode": false,
-        "python": "${workspaceFolder}/backend/venv/Scripts/python.exe",
+        "python": "${workspaceFolder}/backend/venv310/Scripts/python.exe",
         "env": {
           "PYTHONPATH": "${workspaceFolder}/backend"
         }

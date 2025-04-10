@@ -8,6 +8,7 @@ from backend.helper import normalize_url
 from backend.redis.cache_instance import cache as run_cache
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from screenshot_service import run_screenshot_subprocess
 import logging
 import jwt
 import time
@@ -64,6 +65,8 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
     logger.info(f"Processing URL request: {request.url}")
 
     request.url = normalize_url(request.url)
+
+    background_tasks.add_task(run_screenshot_subprocess,request.url)
     
     jwt_data = {
         "url": request.url,
