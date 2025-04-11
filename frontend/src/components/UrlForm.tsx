@@ -23,7 +23,7 @@ const UrlForm: React.FC<UrlFormProps> = ({
       type="text"
       value={url}
       onChange={e => setUrl(e.target.value)}
-      placeholder="What URL you want to check?"
+      placeholder="Which URL would you like to analyze?"
       className="w-full p-3 border rounded shadow-md"
     />
 
