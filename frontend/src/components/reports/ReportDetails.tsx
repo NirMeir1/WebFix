@@ -41,6 +41,7 @@ function parseDynamicContent(rawText: unknown): { [key: string]: string } {
   
   const lines = (text as string).split('\n');
   const contentMap: { [key: string]: string } = {};
+
   // Only update sections we care about.
   const validKeys = new Set([
     'HOME PAGE',
@@ -63,24 +64,17 @@ function parseDynamicContent(rawText: unknown): { [key: string]: string } {
   }
 
   for (const line of lines) {
-    // Detect headers: expecting lines that start with "**" and end with ":**"
-    if (line.startsWith('**') && line.endsWith(':**')) {
+    const normalizedLine = line.toUpperCase().replace(/[^A-Z\s]/g, '').trim();
+    const matchedKey = Array.from(validKeys).find(key => normalizedLine.includes(key));
+    
+    if (matchedKey) {
       flushContent();
-      // Extract header text between the markers.
-      const headerText = line.slice(2, line.length - 3).trim();
-      const upperHeader = headerText.toUpperCase();
-      // Only process headers that match our valid keys.
-      if (validKeys.has(upperHeader)) {
-        currentKey = upperHeader;
-      } else {
-        currentKey = null;
-      }
-    } else {
-      if (currentKey) {
-        currentContent.push(line);
-      }
+      currentKey = matchedKey;
+    } else if (currentKey) {
+      currentContent.push(line);
     }
   }
+  
   flushContent();
   return contentMap;
 }
