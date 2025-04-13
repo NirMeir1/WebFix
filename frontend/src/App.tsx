@@ -50,11 +50,13 @@ const App: React.FC = () => {
       return;
     }
 
+    // Uncomment the following lines if you want to enforce email for deep report
+
     // Basic validation for deep report type.
-    if (reportType === 'deep' && !email) {
-      setError('Email is required for a deep report.');
-      return;
-    }
+    // if (reportType === 'deep' && !email) {
+    //   setError('Email is required for a deep report.');
+    //   return;
+    // }
 
     setLoading(true);
     setShowReport(false);  // Reset report display

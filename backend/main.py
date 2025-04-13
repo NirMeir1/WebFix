@@ -34,30 +34,6 @@ def root():
     logger.info("Root endpoint accessed")
     return {"message": "Backend is running"}
 
-# Debug endpoint to get all keys in the cache with their values
-@app.get("/debug-keys-with-values")
-def get_all_keys_with_values():
-    client = run_cache.cache.client
-    keys = client.keys("*")
-    result = {}
-
-    for key in keys:
-        key_type = client.type(key)
-        if key_type == "string":
-            result[key] = client.get(key)
-        elif key_type == "set":
-            result[key] = list(client.smembers(key))
-        else:
-            result[key] = f"[{key_type} type not displayed]"
-
-    return JSONResponse(content=result, media_type="application/json")
-
-# Debug endpoint to delete all keys in the cache
-@app.delete("/debug-flush")
-def flush_all_keys():
-    run_cache.cache.client.flushdb()
-    return {"message": "All keys deleted from Redis"}
-
 
 @app.post("/analyze-url", response_model=UrlResponse)
 async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
@@ -66,13 +42,6 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
 
     request.url = normalize_url(request.url)
 
-    # screenshot_b64 = capture_screenshot_base64(request.url)
-    # if not screenshot_b64:
-    #     raise HTTPException(status_code=500, detail="Failed to generate screenshot.")
-    # ScreenshotResponse(screenshot_base64=screenshot_b64)
-
-    # background_tasks.add_task(run_screenshot_subprocess,request.url)
-    
     jwt_data = {
         "url": request.url,
         "report_type": request.report_type,
@@ -82,14 +51,14 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
 
     jwt_token = generate_jwt_token(jwt_data)
 
-    if request.report_type == "deep":
-        if not request.email:
-            logger.warning("Email required but not provided for deep report")
-            raise HTTPException(status_code=400, detail="Email required for deep reports")
+    # before deploying, Uncomment the following lines. 
+    # test it again with ngrok before deploying.
 
-        background_tasks.add_task(send_verification_email, request.email, jwt_token)
-        logger.info(f"Email verification initiated for {request.email}")
-        return UrlResponse(output="Email verification sent. Please verify to proceed.", message="Type B: Awaiting verification")
+    # if request.report_type == "deep":
+    #     background_tasks.add_task(send_verification_email, request.email, jwt_token)
+    #     logger.info(f"Email verification initiated for {request.email}")
+    #     return UrlResponse(output="Email verification sent. Please verify to proceed.", message="Type B: Awaiting verification")
+
 
     # Basic report directly generated
     try:

@@ -35,10 +35,11 @@ class UrlRequest(BaseModel):
             except EmailNotValidError as e:
                 raise ValueError(f"Invalid email: {e}")
 
-
+        # Uncomment the following lines if you want to enforce email for deep report
+        
          # ✅ Enforce required email for deep report
-        if report_type == 'deep' and not email:
-            raise ValueError("Email is required for a deep report.")
+        # if report_type == 'deep' and not email:
+        #     raise ValueError("Email is required for a deep report.")
         
         return values
 
@@ -46,9 +47,3 @@ class UrlResponse(BaseModel):
     output: str
     screenshot_base64: str
     message: str
-
-# class ScreenshotRequest(BaseModel):
-#     url: str
-
-# class ScreenshotResponse(BaseModel):
-#     screenshot_base64: str

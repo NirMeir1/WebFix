@@ -15,8 +15,9 @@ class ChatGPTService:
     async def generate_response(self, url: str, report_type: str, industry: str, email: Optional[str] = None) -> str:
         logger.info(f"Generating response for URL: {url}")
 
-        # Define template file path
-        template_path = Path(__file__).parent / "prompts" / "prompt_template.txt"
+        # Select the appropriate template file based on report_type
+        template_filename = "deep_prompt_template.txt" if report_type == "deep" else "prompt_template.txt"
+        template_path = Path(__file__).parent / "prompts" / template_filename
 
         # Check if the template file exists
         if not template_path.exists():
