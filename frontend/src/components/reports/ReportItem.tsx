@@ -3,18 +3,12 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ReportItemProps {
   title: string;
-  rating: 'green' | 'orange' | 'yellow' | 'red';
   content: string;
+  score: number;
+  colorClass: string;
 }
 
-const ratingColors = {
-  green: 'bg-green-400',
-  orange: 'bg-orange-400',
-  yellow: 'bg-yellow-400',
-  red: 'bg-red-500',
-};
-
-const ReportItem: React.FC<ReportItemProps> = ({ title, rating, content }) => {
+const ReportItem: React.FC<ReportItemProps> = ({ title, content, score, colorClass }) => {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -30,7 +24,9 @@ const ReportItem: React.FC<ReportItemProps> = ({ title, rating, content }) => {
           ) : (
             <ChevronDown className="w-5 h-5 text-gray-700" />
           )}
-          <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full ${ratingColors[rating]}`}></div>
+          <div className={`relative w-8 h-8 sm:w-9 sm:h-9 rounded-full ${colorClass} flex items-center justify-center text-white font-bold text-sm`}>
+            {score}
+          </div>
         </div>
       </div>
 

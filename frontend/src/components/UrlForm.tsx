@@ -1,4 +1,6 @@
 import React from 'react';
+import Loader from "./Loader";
+
 
 interface UrlFormProps {
   url: string;
@@ -70,7 +72,14 @@ const UrlForm: React.FC<UrlFormProps> = ({
         Deep Report
       </button>
 
-      <span className="text-sm italic">For deep report we will need your email</span>
+      {loading && <Loader />}
+
+      {!loading && (
+        <span className="text-sm italic">
+          For deep report we will need your email
+        </span>
+      )}
+
     </div>
 
     <div className="border-t pt-4 text-sm">

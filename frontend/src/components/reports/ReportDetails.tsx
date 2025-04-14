@@ -3,18 +3,19 @@ import ReportItem from './ReportItem';
 
 interface Section {
   title: string;
-  rating: 'green' | 'orange' | 'yellow' | 'red';
   content: string;
+  score: number;
+  colorClass: string;
 }
 
 // Default sections with one-word fallback content.
 const defaultSections: Section[] = [
-  { title: 'HOME PAGE', rating: 'green', content: 'Home' },
-  { title: 'CATEGORY PAGE', rating: 'orange', content: 'Category' },
-  { title: 'PRODUCT PAGE', rating: 'yellow', content: 'Product' },
-  { title: 'CART PAGE', rating: 'red', content: 'Cart' },
-  { title: 'CHECKOUT PAGE', rating: 'orange', content: 'Checkout' },
-  { title: 'THANK YOU PAGE', rating: 'orange', content: 'Thanks' },
+  { title: 'HOME PAGE', content: 'Home', score: 0, colorClass: '' },
+  { title: 'CATEGORY PAGE', content: 'Category', score: 0, colorClass: '' },
+  { title: 'PRODUCT PAGE', content: 'Product', score: 0, colorClass: '' },
+  { title: 'CART PAGE', content: 'Cart', score: 0, colorClass: '' },
+  { title: 'CHECKOUT PAGE', content: 'Checkout', score: 0, colorClass: '' },
+  { title: 'THANK YOU PAGE', content: 'Thanks', score: 0, colorClass: '' },
 ];
 
 // Clean the text by normalizing newlines and trimming each line.
@@ -79,21 +80,48 @@ function parseDynamicContent(rawText: unknown): { [key: string]: string } {
   return contentMap;
 }
 
+function extractRatings(content: string): number[] {
+  const map: { [key: string]: number } = {
+    'excellent': 95,
+    'good': 77,
+    'can be improved': 62,
+    'bad': 40
+  };
+
+  const ratings: number[] = [];
+  for (const [label, score] of Object.entries(map)) {
+    const regex = new RegExp(label, 'gi');
+    const matches = content.match(regex);
+    if (matches) {
+      ratings.push(...Array(matches.length).fill(score));
+    }
+  }
+
+  return ratings;
+};
+
+function getColorClass(score: number): string {
+  if (score >= 85) return 'bg-green-400';
+  if (score >= 70) return 'bg-blue-400';
+  if (score >= 55) return 'bg-yellow-400';
+  return 'bg-red-500';
+}
+
 interface ReportDetailsProps {
   reportText: unknown;
 }
 
 const ReportDetails: React.FC<ReportDetailsProps> = ({ reportText }) => {
-  const [sections, setSections] = useState<Section[]>(defaultSections);
+  const [sections, setSections] = useState<Section[]>([]);
 
   useEffect(() => {
     const dynamicContentMap = parseDynamicContent(reportText);
-    // Update default sections with dynamic content when available.
     const updatedSections = defaultSections.map(section => {
-      const key = section.title.toUpperCase();
-      return dynamicContentMap[key]
-        ? { ...section, content: dynamicContentMap[key] }
-        : section;
+      const content = dynamicContentMap[section.title.toUpperCase()] || section.content;
+      const ratings = extractRatings(content);
+      const score = ratings.length ? Math.round(ratings.reduce((a, b) => a + b, 0) / ratings.length) : 0;
+      const colorClass = getColorClass(score);
+      return { ...section, content, score, colorClass };
     });
     setSections(updatedSections);
   }, [reportText]);
@@ -104,8 +132,9 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({ reportText }) => {
         <ReportItem
           key={section.title}
           title={section.title}
-          rating={section.rating}
           content={section.content}
+          score={section.score}
+          colorClass={section.colorClass}
         />
       ))}
     </div>

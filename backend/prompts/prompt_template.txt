@@ -68,7 +68,7 @@ Use only the following exact labels:
 ✅ Excellent (green)
 
 
-🟧 Good (orange)
+🟦 Good (blue)
 
 
 🟨 Can be Improved (strong yellow)
