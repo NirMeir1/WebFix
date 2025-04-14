@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReportItem from './ReportItem';
 
 interface Section {
@@ -8,123 +8,126 @@ interface Section {
   colorClass: string;
 }
 
-// Default sections with one-word fallback content.
-const defaultSections: Section[] = [
-  { title: 'HOME PAGE', content: 'Home', score: 0, colorClass: '' },
-  { title: 'CATEGORY PAGE', content: 'Category', score: 0, colorClass: '' },
-  { title: 'PRODUCT PAGE', content: 'Product', score: 0, colorClass: '' },
-  { title: 'CART PAGE', content: 'Cart', score: 0, colorClass: '' },
-  { title: 'CHECKOUT PAGE', content: 'Checkout', score: 0, colorClass: '' },
-  { title: 'THANK YOU PAGE', content: 'Thanks', score: 0, colorClass: '' },
+const sectionNames = [
+  'HOME PAGE',
+  'CATEGORY PAGE',
+  'PRODUCT PAGE',
+  'CART PAGE',
+  'CHECKOUT PAGE',
+  'THANK YOU PAGE',
 ];
 
-// Clean the text by normalizing newlines and trimming each line.
+const defaultSections: Section[] = sectionNames.map(title => ({
+  title,
+  content: '',
+  score: 0,
+  colorClass: '',
+}));
+
 function cleanText(text: string): string {
-  // Replace CRLF with LF.
-  let cleaned = text.replace(/\r\n/g, '\n');
-  // Trim each line.
-  cleaned = cleaned
+  return text
+    .replace(/\r\n/g, '\n')
     .split('\n')
     .map(line => line.trim())
     .join('\n');
-  return cleaned;
 }
 
-// Parse dynamic content from cleaned report text line by line.
-function parseDynamicContent(rawText: unknown): { [key: string]: string } {
-  // If rawText is an object with an "output" property, use that.
-  let text = (typeof rawText === 'object' && rawText !== null && 'output' in rawText) ? (rawText as { output: string }).output : rawText;
-  // Ensure text is a string.
-  if (typeof text !== 'string') {
-    text = String(text);
-  }
-  text = cleanText(text as string);
-  
-  const lines = (text as string).split('\n');
-  const contentMap: { [key: string]: string } = {};
+function parseDynamicContent(rawText: unknown): {
+  desktop: { [key: string]: string };
+  mobile: { [key: string]: string };
+} {
+  let text = typeof rawText === 'object' && rawText !== null && 'output' in rawText
+    ? (rawText as { output: string }).output
+    : rawText;
 
-  // Only update sections we care about.
-  const validKeys = new Set([
-    'HOME PAGE',
-    'CATEGORY PAGE',
-    'PRODUCT PAGE',
-    'CART PAGE',
-    'CHECKOUT PAGE',
-    'THANK YOU PAGE',
-  ]);
+  if (typeof text !== 'string') text = String(text);
+  const lines = cleanText(String(text)).split('\n');
+
+  const desktop: { [key: string]: string } = {};
+  const mobile: { [key: string]: string } = {};
 
   let currentKey: string | null = null;
+  let targetMap = desktop;
   let currentContent: string[] = [];
 
-  // Helper function to flush accumulated content.
-  function flushContent() {
-    if (currentKey && currentContent.length > 0) {
-      contentMap[currentKey] = currentContent.join('\n').trim();
+  function flush() {
+    if (currentKey && currentContent.length) {
+      targetMap[currentKey] = currentContent.join('\n').trim();
     }
     currentContent = [];
   }
 
   for (const line of lines) {
-    const normalizedLine = line.toUpperCase().replace(/[^A-Z\s]/g, '').trim();
-    const matchedKey = Array.from(validKeys).find(key => normalizedLine.includes(key));
-    
-    if (matchedKey) {
-      flushContent();
-      currentKey = matchedKey;
+    const match = line.match(/\*\*(.+?):\s*(Desktop|Mobile)\*\*/i);
+    if (match) {
+      flush();
+      const section = match[1].toUpperCase();
+      const platform = match[2].toLowerCase();
+      currentKey = section;
+      targetMap = platform === 'desktop' ? desktop : mobile;
     } else if (currentKey) {
       currentContent.push(line);
     }
   }
-  
-  flushContent();
-  return contentMap;
+
+  flush();
+  return { desktop, mobile };
 }
 
-function extractRatings(content: string): number[] {
+function extractRating(content: string): number {
   const map: { [key: string]: number } = {
-    'excellent': 95,
-    'good': 77,
-    'can be improved': 62,
-    'bad': 40
+    'excellent': 5,
+    'good': 4,
+    'can be improved': 3,
+    'bad': 2,
   };
 
-  const ratings: number[] = [];
-  for (const [label, score] of Object.entries(map)) {
-    const regex = new RegExp(label, 'gi');
-    const matches = content.match(regex);
-    if (matches) {
-      ratings.push(...Array(matches.length).fill(score));
+  const ratingLine = content
+    .split('\n')
+    .find(line => line.toLowerCase().startsWith('**rating:'));
+
+  if (ratingLine) {
+    const match = ratingLine.match(/\*\*Rating:\s*([a-zA-Z\s]+)(?:\s*\((.*?)\))?\*\*/i);
+    if (match) {
+      const label = match[1].toLowerCase().trim(); // e.g., "good"
+      return map[label] || 0;
     }
   }
 
-  return ratings;
-};
+  return 0;
+}
 
 function getColorClass(score: number): string {
-  if (score >= 85) return 'bg-green-400';
-  if (score >= 70) return 'bg-blue-400';
-  if (score >= 55) return 'bg-yellow-400';
-  return 'bg-red-500';
+  switch (score) {
+    case 5: return 'bg-green-500';   // Excellent
+    case 4: return 'bg-orange-500';  // Good
+    case 3: return 'bg-yellow-400';  // Can be Improved
+    case 2: return 'bg-red-500';     // Bad
+    default: return 'bg-gray-300';
+  }
 }
 
 interface ReportDetailsProps {
   reportText: unknown;
+  view: 'desktop' | 'mobile';
 }
 
-const ReportDetails: React.FC<ReportDetailsProps> = ({ reportText }) => {
-  const [sections, setSections] = useState<Section[]>([]);
+const ReportDetails: React.FC<ReportDetailsProps> = ({ reportText, view }) => {
+  const [sections, setSections] = useState<Section[]>(defaultSections);
 
   useEffect(() => {
-    const dynamicContentMap = parseDynamicContent(reportText);
-    const updatedSections = defaultSections.map(section => {
-      const content = dynamicContentMap[section.title.toUpperCase()] || section.content;
-      const ratings = extractRatings(content);
-      const score = ratings.length ? Math.round(ratings.reduce((a, b) => a + b, 0) / ratings.length) : 0;
+    const { desktop, mobile } = parseDynamicContent(reportText);
+    const selectedMap = view === 'desktop' ? desktop : mobile;
+
+    const updatedSections = sectionNames.map(title => {
+      const content = selectedMap[title] || '';
+      const score = extractRating(content);
       const colorClass = getColorClass(score);
-      return { ...section, content, score, colorClass };
+      return { title, content, score, colorClass };
     });
+
     setSections(updatedSections);
-  }, [reportText]);
+  }, [reportText, view]);
 
   return (
     <div className="w-full">

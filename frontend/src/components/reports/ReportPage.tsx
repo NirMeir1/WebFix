@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReportDetails from './ReportDetails';
 import PageLayout from '../layout/PageLayout';
 import { ArrowLeft } from 'lucide-react';
@@ -10,6 +10,8 @@ interface ReportPageProps {
 }
 
 const ReportPage: React.FC<ReportPageProps> = ({ url, response, screenshot }) => {
+  const [view, setView] = useState<'desktop' | 'mobile'>('desktop');
+
   return (
     <PageLayout>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-8 pt-8 pb-12">
@@ -34,16 +36,26 @@ const ReportPage: React.FC<ReportPageProps> = ({ url, response, screenshot }) =>
 
           {/* Device Toggle Buttons */}
           <div className="flex gap-4 mt-2">
-            <button className="bg-green-600 text-white font-semibold px-4 py-2 rounded shadow hover:bg-green-700 transition">
+            <button
+              onClick={() => setView('desktop')}
+              className={`px-4 py-2 rounded shadow font-semibold transition ${
+                view === 'desktop' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-800'
+              }`}
+            >
               Desktop
             </button>
-            <button className="bg-green-600 text-white font-semibold px-4 py-2 rounded shadow hover:bg-green-700 transition">
+            <button
+              onClick={() => setView('mobile')}
+              className={`px-4 py-2 rounded shadow font-semibold transition ${
+                view === 'mobile' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-800'
+              }`}
+            >
               Mobile
             </button>
           </div>
 
           {/* Report Sections */}
-          <ReportDetails reportText={response} />
+          <ReportDetails reportText={response} view={view} />
         </div>
 
         {/* Right Column (Screenshot Placeholder) */}
