@@ -28,6 +28,7 @@ const App: React.FC = () => {
   const [message, setMessage] = useState('');
   const [showReport, setShowReport] = useState(false);
   const [screenshot, setScreenshot] = useState('');
+  const [loadingMessage, setLoadingMessage] = useState("Running CRO magic on your site, it may take a few seconds...");
 
 
   // Fetch an initial backend message (optional)
@@ -59,18 +60,16 @@ const App: React.FC = () => {
     // }
 
     setLoading(true);
+    setLoadingMessage("Running CRO magic on your site, it may take a few seconds..."); // Set loading message
     setShowReport(false);  // Reset report display
 
     try {
-      console.log('Sending request...');
-      console.log('Report Type:', reportType);
       const res = await axios.post('http://127.0.0.1:8000/analyze-url', {
         url,
         industry: industry === 'Other' ? 'e-commerce' : industry.toLowerCase(),
-        ...(email && { email }), //add the email key to the request body only if email is truthy (i.e., not null, undefined, or an empty string).
+        ...(email && { email }),
         report_type: reportType,
       });
-      console.log('Request successful:', res);
 
       if (res.data.token) {
         localStorage.setItem('jwt', res.data.token);
@@ -101,6 +100,7 @@ const App: React.FC = () => {
               industry={industry}
               email={email}
               loading={loading}
+              loadingMessage={loadingMessage}
               reportType={reportType}
               industries={industries}
               setUrl={setUrl}

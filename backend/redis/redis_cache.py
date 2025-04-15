@@ -2,7 +2,6 @@ import redis
 import json
 from urllib.parse import urlparse, urlunparse
 
-
 class RedisCacheHandler:
     def __init__(self, host: str, port: int, username: str, password: str):
         self.client = redis.Redis(
@@ -18,15 +17,21 @@ class RedisCacheHandler:
         parsed = urlparse(url)
         return urlunparse((parsed.scheme, parsed.netloc, parsed.path, '', '', ''))
 
-    def get(self, url: str, report_type: str):
-        value = self.client.hget(url, report_type)
-        if value:
-            try:
-                data = json.loads(value)
-                return "Message Type A", data.get("gpt_output")
-            except json.JSONDecodeError:
-                return None, None
-        return None, None
+    def get_cached_output(self, url: str, report_type: str):
+        """
+        Returns GPT output if exists in cache, else None.
+        """
+        try:
+            raw = self.client.hget(url, report_type)
+            if raw:
+                data = json.loads(raw)
+                return data.get("gpt_output")
+        except json.JSONDecodeError:
+            pass
+        return None
+
+    def is_cached(self, url: str, report_type: str) -> bool:
+        return self.client.hexists(url, report_type)
 
     def set(self, data: dict):
         url = data.get("url")
@@ -34,28 +39,11 @@ class RedisCacheHandler:
         if not url or not report_type:
             raise ValueError("Missing 'url' or 'report_type' in data")
 
-        key = url
-        field = report_type
         value = json.dumps(data)
-        self.client.hset(key, field, value)
+        self.client.hset(url, report_type, value)
 
-        # Set TTL only once per hash key (optional: only if key is new)
-        if self.client.ttl(key) == -1:
-            self.client.expire(key, self.ttl)
+        if self.client.ttl(url) == -1:
+            self.client.expire(url, self.ttl)
 
         base_url = self._get_base_url(url)
         self.client.sadd("known_base_urls", base_url)
-
-    def classify_url(self, url: str, report_type: str):
-        print(f"Checking Redis hash for URL: {url} and report_type: {report_type}")
-        if not isinstance(url, str) or not url:
-            raise ValueError(f"Invalid URL: {url}")
-
-        if self.client.hget(url, report_type):
-            return "A"
-
-        base_url = self._get_base_url(url)
-        if self.client.sismember("known_base_urls", base_url):
-            return "B"
-
-        return "Z"

@@ -67,7 +67,7 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
          # "_", output is used to ignore the message type for now
         # it will return the message type in the future
         # message is the msg type (A, B, Z) and output is the actual response.
-        _, output = await run_cache.run(
+        is_cached, output = await run_cache.run(
             url=request.url,
             report_type=request.report_type,
             industry=request.industry,
@@ -88,10 +88,11 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
 
         return UrlResponse(
             output=output,
-            message="Type Z: Basic report generated, Screenshot loading...",
-            screenshot_base64=screenshot_b64
+            message="Done",
+            screenshot_base64=screenshot_b64,
+            is_cached=is_cached
         )
-    
+
     except Exception as e:
         logger.error(f"Error generating GPT response: {e}")
         raise HTTPException(status_code=500, detail="Error generating product report.")
@@ -113,7 +114,7 @@ async def email_verification(token: str, background_tasks: BackgroundTasks):
         # "_", output is used to ignore the message type for now
         # it will return the message type in the future
         # message is the msg type (A, B, Z) and output is the actual response.
-        _, output = await run_cache.run(
+        is_cached, output = await run_cache.run(
             url=url,
             report_type=report_type,
             industry=industry,
