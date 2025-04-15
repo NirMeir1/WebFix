@@ -73,16 +73,30 @@ const UrlForm: React.FC<UrlFormProps> = ({
       </div>
 
 
-      <button
-        type="submit"
-        onClick={() => setReportType('deep')}
-        disabled={loading}
-        className={`w-64 py-3 rounded-full text-white font-bold text-lg shadow-lg
-          ${loading ? (reportType === 'deep' ? 'bg-gray-400' : 'bg-gray-200 cursor-not-allowed') 
-                    : 'bg-gradient-to-r from-green-500 to-green-700 hover:opacity-90'}`}
-      >
-        {loading && reportType === 'deep' ? 'Just A Sec...' : 'Deep Report'}
-      </button>
+      <div className="relative inline-block">
+        <button
+          type="submit"
+          onClick={() => setReportType('deep')}
+          disabled={loading}
+          className={`relative w-64 py-3 px-4 rounded-full text-white font-bold text-lg shadow-lg text-center
+            ${loading ? (reportType === 'deep' ? 'bg-gray-400' : 'bg-gray-200 cursor-not-allowed') 
+                      : 'bg-gradient-to-r from-green-500 to-green-700 hover:opacity-90'}`}
+        >
+          {loading && reportType === 'deep' ? 'Just A Sec...' : 'Deep Report'}
+
+          {/* Tooltip trigger (question mark) */}
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 group">
+            <span className="w-5 h-5 flex items-center justify-center rounded-full bg-white text-gray-800 text-xs font-bold cursor-default hover:bg-gray-100">
+              ?
+            </span>
+            <div className="absolute bottom-full right-0 mb-2 hidden group-hover:flex w-72 bg-white text-gray-800 text-sm p-3 rounded-lg shadow-xl border z-10">
+              <span>
+                The deep CRO report includes tailored insights, examples, and actionable recommendations to improve your site’s performance. Email verification required.
+              </span>
+            </div>
+          </div>
+        </button>
+      </div>
 
       {loading && <Loader />}
 
