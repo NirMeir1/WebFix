@@ -100,7 +100,7 @@ function extractRating(content: string): number {
 function getColorClass(score: number): string {
   switch (score) {
     case 5: return 'bg-green-500';   // Excellent
-    case 4: return 'bg-orange-500';  // Good
+    case 4: return 'bg-green-300';  // Good
     case 3: return 'bg-yellow-400';  // Can be Improved
     case 2: return 'bg-red-500';     // Bad
     default: return 'bg-gray-300';

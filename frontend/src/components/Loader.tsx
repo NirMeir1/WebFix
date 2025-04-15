@@ -7,7 +7,7 @@ export default function Loader() {
           <span className="w-5 h-5 bg-green-500 rounded-full animate-bounce"></span>
         </div>
         <p className="text-lg text-gray-800 font-semibold text-center">
-          Running CRO magic on your site...
+          Running CRO magic on your site, it may take a few seconds...
         </p>
       </div>
     );

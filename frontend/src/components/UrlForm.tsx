@@ -50,11 +50,9 @@ const UrlForm: React.FC<UrlFormProps> = ({
         type="submit"
         onClick={() => setReportType('basic')}
         disabled={loading}
-        className={`w-64 py-3 rounded-full text-white font-bold text-lg shadow-lg ${
-          loading && reportType === 'basic'
-            ? 'bg-gray-400'
-            : 'bg-gradient-to-r from-green-400 to-green-600 hover:opacity-90'
-        }`}
+        className={`w-64 py-3 rounded-full text-white font-bold text-lg shadow-lg
+          ${loading ? (reportType === 'basic' ? 'bg-gray-400' : 'bg-gray-200 cursor-not-allowed') 
+                    : 'bg-gradient-to-r from-green-400 to-green-600 hover:opacity-90'}`}
       >
         {loading && reportType === 'basic' ? 'Just A Sec...' : 'Basic Report'}
       </button>
@@ -63,13 +61,11 @@ const UrlForm: React.FC<UrlFormProps> = ({
         type="submit"
         onClick={() => setReportType('deep')}
         disabled={loading}
-        className={`w-64 py-3 rounded-full text-white font-bold text-lg shadow-lg ${
-          loading && reportType === 'deep'
-            ? 'bg-gray-400'
-            : 'bg-gradient-to-r from-green-500 to-green-700 hover:opacity-90'
-        }`}
+        className={`w-64 py-3 rounded-full text-white font-bold text-lg shadow-lg
+          ${loading ? (reportType === 'deep' ? 'bg-gray-400' : 'bg-gray-200 cursor-not-allowed') 
+                    : 'bg-gradient-to-r from-green-500 to-green-700 hover:opacity-90'}`}
       >
-        Deep Report
+        {loading && reportType === 'deep' ? 'Just A Sec...' : 'Deep Report'}
       </button>
 
       {loading && <Loader />}
