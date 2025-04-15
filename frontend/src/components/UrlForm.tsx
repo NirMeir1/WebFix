@@ -46,16 +46,32 @@ const UrlForm: React.FC<UrlFormProps> = ({
     />
 
     <div className="flex flex-col gap-4 items-center">
-      <button
-        type="submit"
-        onClick={() => setReportType('basic')}
-        disabled={loading}
-        className={`w-64 py-3 rounded-full text-white font-bold text-lg shadow-lg
-          ${loading ? (reportType === 'basic' ? 'bg-gray-400' : 'bg-gray-200 cursor-not-allowed') 
-                    : 'bg-gradient-to-r from-green-400 to-green-600 hover:opacity-90'}`}
-      >
-        {loading && reportType === 'basic' ? 'Just A Sec...' : 'Basic Report'}
-      </button>
+      <div className="relative inline-block">
+        <button
+          type="submit"
+          onClick={() => setReportType('basic')}
+          disabled={loading}
+          className={`relative w-64 py-3 px-4 rounded-full text-white font-bold text-lg shadow-lg text-center
+            ${loading ? (reportType === 'basic' ? 'bg-gray-400' : 'bg-gray-200 cursor-not-allowed')
+                      : 'bg-gradient-to-r from-green-400 to-green-600 hover:opacity-90'}`}
+        >
+          {loading && reportType === 'basic' ? 'Just A Sec...' : 'Basic Report'}
+
+          {/* Tooltip trigger (question mark) */}
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 group">
+            <span className="w-5 h-5 flex items-center justify-center rounded-full bg-white text-gray-800 text-xs font-bold cursor-default hover:bg-gray-100">
+              ?
+            </span>
+            <div className="absolute bottom-full right-0 mb-2 hidden group-hover:flex w-72 bg-white text-gray-800 text-sm p-3 rounded-lg shadow-xl border z-10">
+              <span>
+                View a basic CRO report for your website -
+                This report highlights 10 key issues to fix today or suggests improvements for an excellent score.
+              </span>
+            </div>
+          </div>
+        </button>
+      </div>
+
 
       <button
         type="submit"
