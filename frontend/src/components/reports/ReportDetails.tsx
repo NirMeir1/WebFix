@@ -14,7 +14,6 @@ const sectionNames = [
   'PRODUCT PAGE',
   'CART PAGE',
   'CHECKOUT PAGE',
-  'THANK YOU PAGE',
 ];
 
 const defaultSections: Section[] = sectionNames.map(title => ({

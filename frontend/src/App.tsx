@@ -30,7 +30,6 @@ const App: React.FC = () => {
   const [screenshot, setScreenshot] = useState('');
   const [loadingMessage, setLoadingMessage] = useState('');
 
-
   // Fetch an initial backend message (optional)
   useEffect(() => {
     axios.get('http://127.0.0.1:8000')
@@ -38,14 +37,11 @@ const App: React.FC = () => {
       .catch(err => console.error(err));
   }, []);
 
-  // Handle form submission logic
   const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log('Submitting...');
     e.preventDefault();
     setError('');
     setResponse(null);
 
-    // Validate URL.
     if (!isValidUrl(url)) {
       setError('Please enter a valid URL.');
       return;

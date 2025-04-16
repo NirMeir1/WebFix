@@ -1,11 +1,11 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
 from backend.schemas import UrlRequest, UrlResponse
 from backend.gpt_service import ChatGPTService
 from backend.email_service import send_verification_email, generate_jwt_token,decode_jwt_token, send_report_to_user
 from dotenv import load_dotenv
 from backend.screenshot_service import run_screenshot_subprocess
 from logging_config import setup_logging
-from backend.helper import normalize_url
+from backend.utils.helper import normalize_url, is_mobile
 from backend.redis.cache_instance import cache as run_cache
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -34,10 +34,13 @@ def root():
     logger.info("Root endpoint accessed")
 
 
-@app.post("/analyze-url", response_model=UrlResponse)
-async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
+@app.post("/analyze-url")
+async def analyze_url(requestUserAgent: Request, request: UrlRequest, background_tasks: BackgroundTasks):
     start_time = time.time()
     logger.info(f"Processing URL request: {request.url}")
+
+    user_agent_str = requestUserAgent.headers.get("User-Agent", "")
+    
 
     request.url = normalize_url(request.url)
 
@@ -56,7 +59,7 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
     # if request.report_type == "deep":
     #     background_tasks.add_task(send_verification_email, request.email, jwt_token)
     #     logger.info(f"Email verification initiated for {request.email}")
-    #     return UrlResponse(output="Email verification sent. Please verify to proceed.", message="Type B: Awaiting verification")
+    #     return UrlResponse(output="Email verification sent, Please verify to proceed.")
 
 
     # Basic report directly generated
@@ -78,7 +81,10 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
 
         logger.info(f"GPT response generated for URL: {request.url}")
 
-        screenshot_b64 = run_screenshot_subprocess(request.url)
+        if is_mobile(user_agent_str):
+            screenshot_b64 = None  # ✅ Skip screenshot
+        else:
+            screenshot_b64 = run_screenshot_subprocess(request.url)
 
          # Measure time before returning
         end_time = time.time()
