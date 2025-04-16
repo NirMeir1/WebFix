@@ -45,6 +45,5 @@ class UrlRequest(BaseModel):
 
 class UrlResponse(BaseModel):
     output: str
-    message: str
     screenshot_base64: Optional[str] = None
     is_cached: bool

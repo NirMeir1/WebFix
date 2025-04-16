@@ -87,7 +87,6 @@ async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
 
         return UrlResponse(
             output=output,
-            message="Done",
             screenshot_base64=screenshot_b64,
             is_cached=is_cached
         )
