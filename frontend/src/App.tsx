@@ -28,7 +28,7 @@ const App: React.FC = () => {
   const [message, setMessage] = useState('');
   const [showReport, setShowReport] = useState(false);
   const [screenshot, setScreenshot] = useState('');
-  const [loadingMessage, setLoadingMessage] = useState("Running CRO magic on your site, it may take a few seconds...");
+  const [loadingMessage, setLoadingMessage] = useState('');
 
 
   // Fetch an initial backend message (optional)
@@ -59,8 +59,8 @@ const App: React.FC = () => {
     //   return;
     // }
 
+    setLoadingMessage("Running CRO magic on your site, it may take a few seconds...");
     setLoading(true);
-    setLoadingMessage("Running CRO magic on your site, it may take a few seconds..."); // Set loading message
     setShowReport(false);  // Reset report display
 
     try {
