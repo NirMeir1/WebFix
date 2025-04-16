@@ -70,25 +70,26 @@ const UrlForm: React.FC<UrlFormProps> = ({
       {loading && <Loader message={loadingMessage} />}
 
       {!loading && (
-        <span className="text-sm italic">
-          For deep report we will need your email
+        <span className="text-lg font-bold italic">
+          For the deep report, we will need your email.
         </span>
       )}
 
     </div>
 
-    <div className="border-t pt-4 text-sm">
-      The service is provided in two stages, <strong>both free</strong>. The first stage is a basic report, points.
-      The extended report includes examples and recommendations, but to prevent malicious use of the website,
-      we will ask you to confirm your identity by email.
+    <div className="border-t pt-4 text-base">
+      Our service is offered in two stages, <strong>both free.</strong> 
+      The basic report gives an overview of your website's performance. 
+      For a more comprehensive analysis, the deep report dives deeper, 
+      offering valuable insights and actionable recommendations that can significantly enhance your website’s Conversion Rate Optimization (CRO) potential.
     </div>
 
-    <div className="border-t pt-4 text-sm">
+    <div className="border-t pt-4 text-base">
       <strong>Our Story:</strong><br />
-      We are a team of CRO and technology experts who believe that every website can improve.
-      We founded Bottom Line to help website owners or those on their behalf understand the potential of their website
-      and gain practical insights to improve conversion rates. Increasing your advertising budget is easy,
-      but before that... what's going on at home?
+      We are a team of CRO and technology experts who believe that every website can improve. 
+      We founded Bottom Line to help website owners—or those acting on their behalf—understand
+      the potential of their website and gain practical insights to improve conversion rates. 
+      Increasing your advertising budget is easy, but before that... what's going on at home?
     </div>
   </form>
 );

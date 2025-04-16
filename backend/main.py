@@ -32,7 +32,6 @@ app.add_middleware(
 @app.get("/")
 def root():
     logger.info("Root endpoint accessed")
-    return {"message": "Backend is running"}
 
 
 @app.post("/analyze-url", response_model=UrlResponse)
