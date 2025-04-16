@@ -30,13 +30,16 @@ const App: React.FC = () => {
   const [screenshot, setScreenshot] = useState('');
   const [loadingMessage, setLoadingMessage] = useState('');
 
-  // Fetch an initial backend message (optional)
   useEffect(() => {
     axios.get('http://127.0.0.1:8000')
-      .then(res => setMessage(res.data.message))
+      .then(res => {
+        if (res.data?.message) {
+          setMessage(res.data.message);
+        }
+      })
       .catch(err => console.error(err));
   }, []);
-
+  
   const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');

@@ -66,9 +66,6 @@ async def analyze_url(requestUserAgent: Request, request: UrlRequest, background
     try:
         gpt_instance = ChatGPTService()
 
-         # "_", output is used to ignore the message type for now
-        # it will return the message type in the future
-        # message is the msg type (A, B, Z) and output is the actual response.
         is_cached, output = await run_cache.run(
             url=request.url,
             report_type=request.report_type,
@@ -115,9 +112,6 @@ async def email_verification(token: str, background_tasks: BackgroundTasks):
 
         gpt_instance = ChatGPTService()
 
-        # "_", output is used to ignore the message type for now
-        # it will return the message type in the future
-        # message is the msg type (A, B, Z) and output is the actual response.
         is_cached, output = await run_cache.run(
             url=url,
             report_type=report_type,
@@ -127,7 +121,6 @@ async def email_verification(token: str, background_tasks: BackgroundTasks):
                 url, report_type, industry, email
             )
         )
-
 
         background_tasks.add_task(send_report_to_user, email, output)
 
