@@ -29,30 +29,64 @@ class ChatGPTService:
             template = file.read()
 
         # Replace the placeholders in the template with the values
-        system_prompt = template.replace("{url}", str(url)) \
-                                .replace("{report_type}", report_type) \
-                                .replace("{industry}", industry) \
-                                .replace("{email}", str(email) if email else "")
+        system_prompt = template.replace("{url}", str(url))
+                                # .replace("{report_type}", report_type) \
+                                # .replace("{industry}", industry) \
+                                # .replace("{email}", str(email) if email else "")
 
         # Print the system prompt for validation
-        logger.debug(f"System prompt generated: {system_prompt[:100]}...")  # Log the first 100 chars for brevity
         print(f"Generated System Prompt: {system_prompt}")  # Print the full system prompt for validation
 
         try:
             response = await self.client.responses.create(
-                model=self.model,
-                tools=[{"type": "web_search_preview", "search_context_size": "medium"}],
-                tool_choice={"type": "web_search_preview"},
-                input=system_prompt
-                # max_tokens=5,
-                # temperature=0.2,
-                # top_p=1.0,
-                # frequency_penalty=0.2,
-                # presence_penalty=0
+                model="gpt-4o-mini",
+                input=[
+                    {
+                    "role": "system",
+                    "content": [
+                        {
+                        "type": "input_text",
+                        "text": system_prompt
+                        }
+                    ]
+                    }
+                ],
+                text={
+                    "format": {
+                    "type": "text"
+                    }
+                },
+                reasoning={},
+                tools=[
+                    {
+                    "type": "web_search_preview",
+                    "user_location": {
+                        "type": "approximate"
+                    },
+                    "search_context_size": "high"
+                    }
+                ],
+                tool_choice={
+                    "type": "web_search_preview"
+                },
+                temperature=0.1,
+                max_output_tokens=1500,
+                top_p=0.7,
+                store=True
             )
+
             logger.info(f"Response generated for URL: {url}")
 
-            assistant_reply = response.output[1].content[0].text.strip()
+            # Safely extract the assistant’s reply (assumes the assistant message is the last one)
+            try:
+                assistant_section = response.output[-1]
+                # make sure there *is* at least one content entry
+                if not assistant_section.content:
+                    raise ValueError(f"No content in assistant_section: {assistant_section!r}")
+                assistant_reply = assistant_section.content[0].text.strip()
+            except (IndexError, AttributeError) as e:
+                logger.error("Failed to parse assistant reply, response.output=%r: %s", response.output, e)
+                raise
 
             logger.info(f"Assistant Reply:\n{assistant_reply}")
 

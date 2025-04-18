@@ -76,6 +76,8 @@ async def analyze_url(requestUserAgent: Request, request: UrlRequest, background
             )
         )
 
+        print(f"Output: {output}")
+
         logger.info(f"GPT response generated for URL: {request.url}")
 
         if is_mobile(user_agent_str):
