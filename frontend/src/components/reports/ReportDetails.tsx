@@ -67,7 +67,7 @@ function parseDynamicContent(raw: unknown) {
     if (sectionIndex < 0) continue
 
     const section = sectionNames[sectionIndex]
-    const isBullet = /^•\s/.test(line)
+    const isBullet = /^[•-]\s/.test(line)
     const isAverage = /^\*\*Average Score/.test(line)
     if (currentDevice === 'desktop' && (isBullet || isAverage)) {
       desktopMap[section].push(line)

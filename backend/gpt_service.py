@@ -39,7 +39,7 @@ class ChatGPTService:
 
         try:
             response = await self.client.responses.create(
-                model="gpt-4o-mini",
+                model="gpt-4o-mini", # need to play with this to get the right model
                 input=[
                     {
                     "role": "system",
@@ -59,19 +59,19 @@ class ChatGPTService:
                 reasoning={},
                 tools=[
                     {
-                    "type": "web_search_preview",
+                    "type": "web_search",
                     "user_location": {
                         "type": "approximate"
                     },
-                    "search_context_size": "high"
+                    "search_context_size": "medium" 
                     }
                 ],
                 tool_choice={
-                    "type": "web_search_preview"
+                    "type": "web_search"
                 },
                 temperature=0.1,
-                max_output_tokens=1500,
-                top_p=0.7,
+                max_output_tokens=2000, # need to play with this to get the right size
+                top_p=1.0,
                 store=True
             )
 

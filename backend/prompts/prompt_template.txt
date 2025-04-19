@@ -11,29 +11,29 @@ The user has supplied this live URL: {url}. Use only the site’s current public
 For each page—Home, Category, Product, Cart, Checkout, and Footer—provide separate analyses for Desktop and Mobile. On Desktop and then on Mobile, evaluate exactly these criteria:
 
 Home Page:
-- Presence of site‑wide offers (e.g. Free Shipping) with urgency and scarcity triggers
-- A friendly sales funnel guiding users to categories, products, or promotions
+• Presence of site‑wide offers (e.g. Free Shipping) with urgency and scarcity triggers
+• A friendly sales funnel guiding users to categories, products, or promotions
 
 Category Page:
-- Visibility and hover behavior of the CTA button motivating navigation to product pages
-- Consistent sizing of product cards for better scannability
+• Visibility and hover behavior of the CTA button motivating navigation to product pages
+• Consistent sizing of product cards for better scannability
 
 Product Page:
-- Visibility and accessibility of customer support/contact options (WhatsApp, Live Chat, Phone)
-- Product title length under 65 characters so it appears fully in search results
+• Visibility and accessibility of customer support/contact options (WhatsApp, Live Chat, Phone)
+• Product title length under 65 characters so it appears fully in search results
 
 Cart Page:
-- Display of savings information near the CTA button to boost conversions
-- Inclusion of all essential product details (title, image, chosen variant, quantity, price)
+• Display of savings information near the CTA button to boost conversions
+• Inclusion of all essential product details (title, image, chosen variant, quantity, price)
 
 Checkout Page:
-- Presence of a detailed order summary before completing purchase for transparency
-- Prominence of the main CTA as the most eye‑catching element
+• Presence of a detailed order summary before completing purchase for transparency
+• Prominence of the main CTA as the most eye‑catching element
 
 Footer:
-- Visibility of store benefits (shipping, returns, contact info)
-- Availability of a “Back to top” link
-- Transparency of business details
+• Visibility of store benefits (shipping, returns, contact info)
+• Availability of a “Back to top” link
+• Transparency of business details
 
 After rating each criterion (“Excellent” = 5, “Good” = 4, “Can Be Improved” = 3, “Bad” = 2), compute the average numeric score separately for Desktop and for Mobile, and label each average accordingly.
 
