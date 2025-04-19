@@ -1,13 +1,5 @@
-// ReportDetails.tsx
-import React, { useEffect, useState } from 'react'
+import React, { useMemo } from 'react'
 import ReportItem from './ReportItem'
-
-interface Section {
-  title: string
-  content: string
-  score: number
-  colorClass: string
-}
 
 const sectionNames = [
   'HOME PAGE',
@@ -18,114 +10,86 @@ const sectionNames = [
   'FOOTER',
 ]
 
-const defaultSections: Section[] = sectionNames.map(title => ({
-  title,
-  content: '',
-  score: 0,
-  colorClass: '',
-}))
-
-function cleanText(text: string): string {
-  return text
-    .replace(/\r\n/g, '\n')
-    .split('\n')
-    .map(line => line.trim())
-    .join('\n')
-}
-
 /**
- * Parses sequential DEVICE blocks for each section,
- * capturing only lines starting with "• " and the Average Score line.
+ * Parses raw report text into structured content per section and device.
  */
-function parseDynamicContent(raw: unknown) {
-  let txt =
+function parseSections(raw: unknown) {
+  const text =
     typeof raw === 'object' && raw !== null && 'output' in raw
       ? (raw as { output: string }).output
-      : raw
-  if (typeof txt !== 'string') txt = String(txt)
+      : String(raw)
 
-  const lines = cleanText(txt as string).split('\n')
-  const desktopMap: Record<string, string[]> = {}
-  const mobileMap: Record<string, string[]> = {}
+  const lines = text.replace(/\r\n/g, '\n').split('\n').map(l => l.trim())
+  const results = sectionNames.map(() => ({ desktop: [] as string[], mobile: [] as string[] }))
+
   let sectionIndex = -1
-  let currentDevice: 'desktop' | 'mobile' | null = null
+  let device: 'desktop' | 'mobile' | null = null
+  const deviceRegex = /^<!--\s*DEVICE:(desktop|mobile)\s*-->$/i
 
   for (const line of lines) {
-    if (/^<!--\s*DEVICE:desktop\s*-->$/i.test(line)) {
-      sectionIndex++  // move to next section
-      currentDevice = 'desktop'
-      const section = sectionNames[sectionIndex]
-      desktopMap[section] = []
-      mobileMap[section] = []
+    const match = deviceRegex.exec(line)
+    if (match) {
+      const dev = match[1].toLowerCase() as 'desktop' | 'mobile'
+      if (dev === 'desktop') sectionIndex++
+      device = dev
       continue
     }
-    if (/^<!--\s*DEVICE:mobile\s*-->$/i.test(line)) {
-      currentDevice = 'mobile'
-      continue
-    }
-
-    if (sectionIndex < 0) continue
-
-    const section = sectionNames[sectionIndex]
-    const isBullet = /^[•-]\s/.test(line)
-    const isAverage = /^\*\*Average Score/.test(line)
-    if (currentDevice === 'desktop' && (isBullet || isAverage)) {
-      desktopMap[section].push(line)
-    } else if (currentDevice === 'mobile' && (isBullet || isAverage)) {
-      mobileMap[section].push(line)
+    if (device && sectionIndex >= 0 && sectionIndex < results.length) {
+      results[sectionIndex][device].push(line)
     }
   }
 
-  return {
-    desktop: Object.fromEntries(
-      Object.entries(desktopMap).map(([k, v]) => [k, v.join('\n').trim()])
-    ),
-    mobile: Object.fromEntries(
-      Object.entries(mobileMap).map(([k, v]) => [k, v.join('\n').trim()])
-    ),
-  }
+  return sectionNames.reduce(
+    (acc, title, idx) => {
+      const { desktop, mobile } = results[idx]
+      ;['desktop', 'mobile'].forEach(d => {
+        const lines = (d === 'desktop' ? desktop : mobile) as string[]
+        const recIdx = lines.findIndex(l =>
+                    /^(?:\*\*)?Recommendations\s*[:–-]/i.test(l))
+        const expIdx = lines.findIndex(l =>
+                    /^(?:\*\*)?Explanation\s*[:–-]/i.test(l))
+
+        const expStart = expIdx >= 0 ? expIdx + 1 : 0
+        const expEnd = recIdx >= 0 ? recIdx : lines.length
+
+        const expLines = lines.slice(expStart, expEnd).filter(l => /^[•-]\s/.test(l) || /Average Score/.test(l))
+        const recLines = recIdx >= 0 ? lines.slice(recIdx + 1).filter(l => /^[•-]\s/.test(l)) : []
+
+        const parts: string[] = []
+        if (expLines.length) parts.push(['**Explanation –**', ...expLines].join('\n'))
+        if (recLines.length) parts.push(['**Recommendations –**', ...recLines].join('\n'))
+
+        acc[d as 'desktop' | 'mobile'][title] = parts.join('\n\n').trim()
+      })
+      return acc
+    },
+    { desktop: {} as Record<string, string>, mobile: {} as Record<string, string> }
+  )
 }
 
 /**
- * Extracts the numeric score from the Average Score line.
+ * Extracts numeric score from content.
  */
-function extractPageScore(content: string): number {
-  // Strip out bold markers so our regexes don’t get confused
-  const plain = content.replace(/\*\*/g, '')
-
-  // 1) Try the “Average Score (Desktop|Mobile): … → Rating” line
-  const avgRegex =
-    /Average Score\s*\(\s*(?:Desktop|Mobile)\)\s*:\s*[^→]*→\s*(Excellent|Good|Can Be Improved|Bad)/i
-  const avgMatch = avgRegex.exec(plain)
-  if (avgMatch) {
+function extractScore(content: string): number {
+  const clean = content.replace(/\*\*/g, '')
+  const avg = /Average Score\s*\(\s*(?:Desktop|Mobile)\)\s*:[^→]*→\s*(Excellent|Good|Can Be Improved|Bad)/i.exec(clean)
+  if (avg) {
     const map = { excellent: 5, good: 4, 'can be improved': 3, bad: 2 } as const
-    return map[avgMatch[1].toLowerCase() as keyof typeof map]
+    return map[avg[1].toLowerCase() as keyof typeof map]
   }
-
-  // 2) Fallback: look for any “Score: <number>”
-  const numRegex = /Score\s*:\s*(\d+)/i
-  const numMatch = numRegex.exec(plain)
-  if (numMatch) {
-    return parseInt(numMatch[1], 10)
-  }
-
-  return 0
+  const num = /Score\s*:\s*(\d+)/i.exec(clean)
+  return num ? parseInt(num[1], 10) : 0
 }
 
-
+/**
+ * Maps score to a color CSS class.
+ */
 function getColorClass(score: number): string {
-  switch (score) {
-    case 5:
-      return 'bg-green-500'
-    case 4:
-      return 'bg-green-300'
-    case 3:
-      return 'bg-yellow-400'
-    case 2:
-      return 'bg-red-500'
-    default:
-      return 'bg-gray-300'
-  }
+  if (score >= 5) return 'bg-green-500'
+  if (score === 4) return 'bg-green-300'
+  if (score === 3) return 'bg-yellow-400'
+  if (score === 2) return 'bg-red-500'
+  return 'bg-gray-300'
 }
 
 interface ReportDetailsProps {
@@ -133,21 +97,18 @@ interface ReportDetailsProps {
   view: 'desktop' | 'mobile'
 }
 
+/**
+ * Renders parsed report sections based on selected view.
+ */
 const ReportDetails: React.FC<ReportDetailsProps> = ({ reportText, view }) => {
-  const [sections, setSections] = useState<Section[]>(defaultSections)
-
-  useEffect(() => {
-    const { desktop, mobile } = parseDynamicContent(reportText)
-    const selected = view === 'desktop' ? desktop : mobile
-
-    const updated = sectionNames.map(title => {
-      const content = selected[title] || ''
-      const score = extractPageScore(content)
-      const colorClass = getColorClass(score)
-      return { title, content, score, colorClass }
+  const sections = useMemo(() => {
+    const { desktop, mobile } = parseSections(reportText)
+    const source = view === 'desktop' ? desktop : mobile
+    return sectionNames.map(title => {
+      const content = source[title] || ''
+      const score = extractScore(content)
+      return { title, content, score, colorClass: getColorClass(score) }
     })
-
-    setSections(updated)
   }, [reportText, view])
 
   return (

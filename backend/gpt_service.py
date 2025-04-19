@@ -70,7 +70,7 @@ class ChatGPTService:
                     "type": "web_search"
                 },
                 temperature=0.1,
-                max_output_tokens=2000, # need to play with this to get the right size
+                max_output_tokens=2250, # need to play with this to get the right size
                 top_p=1.0,
                 store=True
             )
