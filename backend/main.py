@@ -1,15 +1,17 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
 from backend.schemas import UrlRequest, UrlResponse
 from backend.gpt_service import ChatGPTService
 from backend.email_service import send_verification_email, generate_jwt_token,decode_jwt_token, send_report_to_user
 from dotenv import load_dotenv
+from backend.screenshot_service import run_screenshot_subprocess
 from logging_config import setup_logging
-from backend.helper import normalize_url
+from backend.utils.helper import normalize_url, is_mobile
 from backend.redis.cache_instance import cache as run_cache
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 import jwt
+import time
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -18,7 +20,7 @@ load_dotenv()
 
 app = FastAPI()
 
-# 2. Add the CORS middleware
+# Add the CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allows all origins. You can restrict this for better security.
@@ -30,78 +32,70 @@ app.add_middleware(
 @app.get("/")
 def root():
     logger.info("Root endpoint accessed")
-    return {"message": "Backend is running"}
-
-# Debug endpoint to get all keys in the cache with their values
-@app.get("/debug-keys-with-values")
-def get_all_keys_with_values():
-    client = run_cache.cache.client
-    keys = client.keys("*")
-    result = {}
-
-    for key in keys:
-        key_type = client.type(key)
-        if key_type == "string":
-            result[key] = client.get(key)
-        elif key_type == "set":
-            result[key] = list(client.smembers(key))
-        else:
-            result[key] = f"[{key_type} type not displayed]"
-
-    return JSONResponse(content=result, media_type="application/json")
-
-# Debug endpoint to delete all keys in the cache
-@app.delete("/debug-flush")
-def flush_all_keys():
-    run_cache.cache.client.flushdb()
-    return {"message": "All keys deleted from Redis"}
 
 
-@app.post("/analyze-url", response_model=UrlResponse)
-async def analyze_url(request: UrlRequest, background_tasks: BackgroundTasks):
-    print(request.dict())  # Logs the request data
+@app.post("/analyze-url")
+async def analyze_url(requestUserAgent: Request, request: UrlRequest, background_tasks: BackgroundTasks):
+    start_time = time.time()
     logger.info(f"Processing URL request: {request.url}")
 
-    request.url = normalize_url(request.url)
+    user_agent_str = requestUserAgent.headers.get("User-Agent", "")
     
+
+    request.url = normalize_url(request.url)
+
     jwt_data = {
         "url": request.url,
         "report_type": request.report_type,
-        "industry": request.industry,
         "email": request.email
     }
 
     jwt_token = generate_jwt_token(jwt_data)
 
-    if request.report_type == "deep":
-        if not request.email:
-            logger.warning("Email required but not provided for deep report")
-            raise HTTPException(status_code=400, detail="Email required for deep reports")
+    # before deploying, Uncomment the following lines. 
+    # test it again with ngrok before deploying.
 
-        background_tasks.add_task(send_verification_email, request.email, jwt_token)
-        logger.info(f"Email verification initiated for {request.email}")
-        return UrlResponse(output="Email verification sent. Please verify to proceed.", message="Type B: Awaiting verification")
+    # if request.report_type == "deep":
+    #     background_tasks.add_task(send_verification_email, request.email, jwt_token)
+    #     logger.info(f"Email verification initiated for {request.email}")
+    #     return UrlResponse(output="Email verification sent, Please verify to proceed.")
+
 
     # Basic report directly generated
     try:
         gpt_instance = ChatGPTService()
 
-         # "_", output is used to ignore the message type for now
-        # it will return the message type in the future
-        # message is the msg type (A, B, Z) and output is the actual response.
-        _, output = await run_cache.run(
+        is_cached, output = await run_cache.run(
             url=request.url,
             report_type=request.report_type,
-            industry=request.industry,
             email=request.email,
             gpt_func=lambda: gpt_instance.generate_gpt_report(
-                request.url, request.report_type, request.industry
+                request.url, request.report_type
             )
         )
 
+        print(f"Is Cached: {is_cached}")
+
+        print(f"Output: {output}")
+
         logger.info(f"GPT response generated for URL: {request.url}")
-        return UrlResponse(output=output, message="Type Z: Basic report generated")
-    
+
+        if is_mobile(user_agent_str):
+            screenshot_b64 = None  # ✅ Skip screenshot
+        else:
+            screenshot_b64 = run_screenshot_subprocess(request.url)
+
+         # Measure time before returning
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Time taken: {elapsed_time:.4f} seconds")
+
+        return UrlResponse(
+            output=output,
+            screenshot_base64=screenshot_b64,
+            is_cached=is_cached
+        )
+
     except Exception as e:
         logger.error(f"Error generating GPT response: {e}")
         raise HTTPException(status_code=500, detail="Error generating product report.")
@@ -114,25 +108,19 @@ async def email_verification(token: str, background_tasks: BackgroundTasks):
         email = decoded['email']
         url = decoded['url']
         report_type = decoded['report_type']
-        industry = decoded['industry']
 
         logger.info(f"Email verified: {email}")
 
         gpt_instance = ChatGPTService()
 
-        # "_", output is used to ignore the message type for now
-        # it will return the message type in the future
-        # message is the msg type (A, B, Z) and output is the actual response.
-        _, output = await run_cache.run(
+        is_cached, output = await run_cache.run(
             url=url,
             report_type=report_type,
-            industry=industry,
             email=email,
             gpt_func=lambda: gpt_instance.generate_gpt_report(
-                url, report_type, industry, email
+                url, report_type, email
             )
         )
-
 
         background_tasks.add_task(send_report_to_user, email, output)
 

@@ -1,23 +1,11 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios, { AxiosError } from 'axios';
+import UrlForm from './components/UrlForm';
+import ReportPage from './components/reports/ReportPage';
+import PageLayout from './components/layout/PageLayout';
 
-// Define a type for the expected API response.
-interface ApiResponse {
-    type: 'Z' | 'A' | 'B';
-    message: string;
-    token?: string;
-  // Extend with more fields as needed.
-}
-
-// List of industries.
-const industries = [
-  'Technology',
-  'Finance',
-  'Healthcare',
-  'Education',
-  'Fashion',
-  'Other'
-];
+// Define your industries once and pass them as props
+const industries = ['Technology', 'Finance', 'Healthcare', 'Education', 'Fashion', 'Other'];
 
 // Simple URL validator using the URL constructor.
 const isValidUrl = (url: string): boolean => {
@@ -31,189 +19,105 @@ const isValidUrl = (url: string): boolean => {
 
 const App: React.FC = () => {
   const [url, setUrl] = useState('');
-  const [industry, setIndustry] = useState(industries[0]);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [response, setResponse] = useState<ApiResponse | null>(null);
+  const [response, setResponse] = useState<string | null>(null);
   const [reportType, setReportType] = useState<'basic' | 'deep'>('basic');
-  const [message, setMessage] = useState(''); // Add this line
+  const [message, setMessage] = useState('');
+  const [showReport, setShowReport] = useState(false);
+  const [screenshot, setScreenshot] = useState('');
+  const [loadingMessage, setLoadingMessage] = useState('');
+  const [isCached, setIsCached] = useState(false)
 
-  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    // Update this URL to match your FastAPI backend URL
     axios.get('http://127.0.0.1:8000')
-      .then(response => {
-        setMessage(response.data.message);
+      .then(res => {
+        if (res.data?.message) {
+          setMessage(res.data.message);
+        }
       })
-      .catch(error => {
-        console.error("There was an error fetching the message!", error);
-      });
+      .catch(err => console.error(err));
   }, []);
-
-  // Submit handler using a form submission event.
+  
   const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setResponse(null);
 
-    if (!reportType || (reportType !== 'basic' && reportType !== 'deep')) {
-      setError('Invalid report type.');
-      return;
-    }
-
-    if (reportType === 'deep' && !email) {
-      setError('Email is required for a deep report.');
-      return;
-    }
-    
-    // Validate URL.
     if (!isValidUrl(url)) {
       setError('Please enter a valid URL.');
       return;
     }
-    
-    // Validate email for deep report.
-    if (reportType === 'deep' && !email) {
-      setError('Email is required for a deep report.');
-      return;
-    }
-      
-    const normalizedIndustry = (industry === 'Other' ? 'e-commerce' : industry.toLowerCase());
 
-    // Set up headers. Include JWT in deep report requests if available.
-    const headers: Record<string, string> = {};
-    if (reportType === 'deep') {
-        const token = localStorage.getItem('jwt');
-        if (token) {
-        headers.Authorization = `Bearer ${token}`;
-        }
-    }
+    // Uncomment the following lines if you want to enforce email for deep report
 
+    // Basic validation for deep report type.
+    // if (reportType === 'deep' && !email) {
+    //   setError('Email is required for a deep report.');
+    //   return;
+    // }
+
+    setLoadingMessage("Running CRO magic on your site, it may take a few seconds...");
     setLoading(true);
+    setShowReport(false);  // Reset report display
+
     try {
-        console.log({
-          url,
-          industry: normalizedIndustry,
-          email,
-          reportType
-        });
-        const res = await axios.post('http://127.0.0.1:8000/analyze-url', {
-            url,
-            industry: normalizedIndustry,
-            email,
-            report_type: reportType
-            });
-        const data: ApiResponse = res.data;
+      const res = await axios.post('http://127.0.0.1:8000/analyze-url', {
+        url,
+        ...(email && { email }),
+        report_type: reportType,
+      });
 
-        if (data.token) {
-            localStorage.setItem('jwt', data.token);
-          }
-          
-      setResponse(data);
+      const { output, screenshot_base64, is_cached } = res.data
 
+      if (res.data.token) {
+        localStorage.setItem('jwt', res.data.token);
+      }
+
+      setResponse(output)                                        // store the actual report text
+      setScreenshot(`data:image/png;base64,${screenshot_base64}`) 
+      setIsCached(is_cached)                                     // store the cache‐flag
+      setShowReport(true)
+      
     } catch (err) {
       const axiosError = err as AxiosError;
-
-      setError('An error occurred while fetching the data.');
-      console.error('Request failed:', axiosError);
-
-      if (axiosError.response) {
-        console.error('Status:', axiosError.response.status);
-        console.error('Data:', axiosError.response.data);
-      }
+      setError('An error occurred while fetching data.');
+      console.error(axiosError);
     } finally {
       setLoading(false);
     }
-  }, [url, industry, email, reportType]);
+  }, [url, email, reportType]); 
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl mb-4">URL Analysis</h1>
-
-      {/* Render the message here */}
-      <h1>{message}</h1>  {/* Display the message from the backend */}
-
-      <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="url" className="block text-lg">
-            URL:
-          </label>
-          <input
-            type="text"
-            id="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            className="w-full p-2 border rounded"
-            placeholder="https://example.com"
-          />
-        </div>
-        <div>
-          <label htmlFor="industry" className="block text-lg">
-            Industry:
-          </label>
-          <select
-            id="industry"
-            value={industry}
-            onChange={(e) => setIndustry(e.target.value)}
-            className="w-full p-2 border rounded"
-          >
-            {industries.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="email" className="block text-lg">
-            Email (required for deep report):
-          </label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border rounded"
-            placeholder="your.email@example.com"
-          />
-        </div>
-        <div className="flex space-x-4">
-          <button
-            type="button"
-            disabled={loading}
-            onClick={() => {
-              setReportType('basic');
-              setTimeout(() => formRef.current?.requestSubmit(), 0);
-            }}
-            className="bg-blue-500 text-white p-2 rounded"
-          >
-            {loading ? 'Just a sec...' : 'Basic Report'}
-          </button>
-
-          <button
-            type="button"
-            disabled={loading}
-            onClick={() => {
-              setReportType('deep');
-              setTimeout(() => formRef.current?.requestSubmit(), 0);
-            }}
-            className="bg-green-500 text-white p-2 rounded"
-          >
-            {loading ? 'Just a sec...' : 'Deep Report'}
-          </button>
-        </div>
-
-      </form>
-      {error && <p className="text-red-500 mt-4">{error}</p>}
-      {response && (
-        <div className="mt-4 p-4 border rounded">
-          <h2 className="text-xl">Response:</h2>
-          <pre className="whitespace-pre-wrap">{JSON.stringify(response, null, 2)}</pre>
-        </div>
+    <>
+      {!showReport ? (
+        <PageLayout>
+          <main className="flex-1 container mx-auto px-4 py-8 text-center">
+            {message && <div className="mb-4 text-green-700 font-semibold text-lg">{message}</div>}
+        
+            <UrlForm
+              url={url}
+              email={email}
+              loading={loading}
+              loadingMessage={loadingMessage}
+              reportType={reportType}
+              industries={industries}
+              setUrl={setUrl}
+              setEmail={setEmail}
+              setReportType={setReportType}
+              onSubmit={handleSubmit}
+            />
+        
+            {error && <p className="text-red-500 mt-4 font-semibold">{error}</p>}
+          </main>
+      </PageLayout>
+      
+      ) : (
+        <ReportPage url={url} response={response || ''} screenshot={screenshot} isCached={isCached}/>
       )}
-    </div>
+    </>
   );
 };
 

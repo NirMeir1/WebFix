@@ -9,14 +9,15 @@ logger = logging.getLogger(__name__)
 class ChatGPTService:
     def __init__(self):
         self.client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        self.model = "gpt-3.5-turbo"
+        self.model = "gpt-4o-mini"
         logger.info("ChatGPTService initialized with model %s", self.model)
 
-    async def generate_response(self, url: str, report_type: str, industry: str, email: Optional[str] = None) -> str:
+    async def generate_response(self, url: str, report_type: str, email: Optional[str] = None) -> str:
         logger.info(f"Generating response for URL: {url}")
 
-        # Define template file path
-        template_path = Path(__file__).parent / "prompts" / "prompt_template.txt"
+        # Select the appropriate template file based on report_type
+        template_filename = "deep_prompt_template.txt" if report_type == "deep" else "prompt_template.txt"
+        template_path = Path(__file__).parent / "prompts" / template_filename
 
         # Check if the template file exists
         if not template_path.exists():
@@ -24,39 +25,79 @@ class ChatGPTService:
             raise FileNotFoundError(f"Template file not found at {template_path}")
         
         # Read the template file
-        with open(template_path, "r") as file:
+        with open(template_path, "r", encoding="utf-8") as file:
             template = file.read()
 
         # Replace the placeholders in the template with the values
-        system_prompt = template.replace("{url}", str(url)) \
-                                .replace("{report_type}", report_type) \
-                                .replace("{industry}", industry) \
-                                .replace("{email}", str(email) if email else "")
+        system_prompt = template.replace("{url}", str(url))
+                                # .replace("{report_type}", report_type) \
+                                # .replace("{email}", str(email) if email else "")
 
         # Print the system prompt for validation
-        logger.debug(f"System prompt generated: {system_prompt[:100]}...")  # Log the first 100 chars for brevity
         print(f"Generated System Prompt: {system_prompt}")  # Print the full system prompt for validation
 
         try:
-            # Call the OpenAI API to generate the response
-            response = await self.client.chat.completions.create(
-                model=self.model,
-                messages=[{"role": "system", "content": system_prompt}],
-                max_tokens=5,
-                temperature=0.2,
+            response = await self.client.responses.create(
+                model="gpt-4o-mini", # need to play with this to get the right model
+                input=[
+                    {
+                    "role": "system",
+                    "content": [
+                        {
+                        "type": "input_text",
+                        "text": system_prompt
+                        }
+                    ]
+                    }
+                ],
+                text={
+                    "format": {
+                    "type": "text"
+                    }
+                },
+                reasoning={},
+                tools=[
+                    {
+                    "type": "web_search",
+                    "user_location": {
+                        "type": "approximate"
+                    },
+                    "search_context_size": "medium" 
+                    }
+                ],
+                tool_choice={
+                    "type": "web_search"
+                },
+                temperature=0.1,
+                max_output_tokens=2250, # need to play with this to get the right size
                 top_p=1.0,
-                frequency_penalty=0.2,
-                presence_penalty=0
+                store=True
             )
+
             logger.info(f"Response generated for URL: {url}")
-            return response.choices[0].message.content.strip()
+
+            # Safely extract the assistant’s reply (assumes the assistant message is the last one)
+            try:
+                assistant_section = response.output[-1]
+                # make sure there *is* at least one content entry
+                if not assistant_section.content:
+                    raise ValueError(f"No content in assistant_section: {assistant_section!r}")
+                assistant_reply = assistant_section.content[0].text.strip()
+            except (IndexError, AttributeError) as e:
+                logger.error("Failed to parse assistant reply, response.output=%r: %s", response.output, e)
+                raise
+
+            logger.info(f"Assistant Reply:\n{assistant_reply}")
+
+            return assistant_reply
+
         except Exception as e:
             logger.error(f"Error generating response for URL: {url}, Error: {str(e)}")
             raise
     
-    async def generate_gpt_report(self, url: str, report_type: str, industry: str, email: Optional[str] = None) -> str:
+    async def generate_gpt_report(self, url: str, report_type: str, email: Optional[str] = None) -> str:
         """
         Helper function to generate a GPT response using the ChatGPTService.
         """
-        output = await self.generate_response(url, report_type, industry, email)
+        output = await self.generate_response(url, report_type, email)
         return output

@@ -1,0 +1,17 @@
+**Home Page:** 
+Say "Hello World" in English.
+
+Category page >> 
+Say "Hello World" in Spanish.
+
+[Product Page] - 
+Say "Hello World" in French.
+
+**Cart Page**: 
+Say "Hello World" in German.
+
+Checkout page — 
+Say "Hello World" in Japanese.
+
+**Thank you page!** 
+Say "Hello World" in Hebrew.

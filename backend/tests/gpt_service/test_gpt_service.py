@@ -6,18 +6,15 @@ from gpt_service import ChatGPTService
 async def test_generate_response():
     url = "https://www.happiness.co.il/"
     report_type = "Test Report"
-    industry = "Tech"
     email = "test@example.com"
     dummy_template = (
         "URL: {url}\n"
         "Report: {report_type}\n"
-        "Industry: {industry}\n"
         "Email: {email}"
     )
     expected_prompt = (
         f"URL: {url}\n"
         f"Report: {report_type}\n"
-        f"Industry: {industry}\n"
         f"Email: {email}"
     )
     mock_response = "This is a generated response."
@@ -37,7 +34,7 @@ async def test_generate_response():
         )
 
         gpt_service = ChatGPTService()
-        result = await gpt_service.generate_response(url, report_type, industry, email)
+        result = await gpt_service.generate_response(url, report_type, email)
 
         # Verify that the API call was made with the expected prompt
         mock_client.chat.completions.create.assert_called_once()
