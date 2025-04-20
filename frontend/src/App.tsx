@@ -19,7 +19,6 @@ const isValidUrl = (url: string): boolean => {
 
 const App: React.FC = () => {
   const [url, setUrl] = useState('');
-  const [industry, setIndustry] = useState(industries[0]);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -67,7 +66,6 @@ const App: React.FC = () => {
     try {
       const res = await axios.post('http://127.0.0.1:8000/analyze-url', {
         url,
-        industry: industry === 'Other' ? 'e-commerce' : industry.toLowerCase(),
         ...(email && { email }),
         report_type: reportType,
       });
@@ -90,7 +88,7 @@ const App: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [url, industry, email, reportType]); 
+  }, [url, email, reportType]); 
 
   return (
     <>
@@ -101,14 +99,12 @@ const App: React.FC = () => {
         
             <UrlForm
               url={url}
-              industry={industry}
               email={email}
               loading={loading}
               loadingMessage={loadingMessage}
               reportType={reportType}
               industries={industries}
               setUrl={setUrl}
-              setIndustry={setIndustry}
               setEmail={setEmail}
               setReportType={setReportType}
               onSubmit={handleSubmit}

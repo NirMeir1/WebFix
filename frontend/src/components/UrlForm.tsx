@@ -4,22 +4,20 @@ import TooltipButton from './TooltipButton';
 
 interface UrlFormProps {
   url: string;
-  industry: string;
   email: string;
   loading: boolean;
   reportType: 'basic' | 'deep';
   industries: string[];
   loadingMessage: string;
   setUrl: React.Dispatch<React.SetStateAction<string>>;
-  setIndustry: React.Dispatch<React.SetStateAction<string>>;
   setEmail: React.Dispatch<React.SetStateAction<string>>;
   setReportType: React.Dispatch<React.SetStateAction<'basic' | 'deep'>>;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
 const UrlForm: React.FC<UrlFormProps> = ({
-  url, industry, email, loading, reportType,
-  industries, loadingMessage, setUrl, setIndustry, setEmail, setReportType, onSubmit
+  url, email, loading, reportType, 
+  loadingMessage, setUrl, setEmail, setReportType, onSubmit
 }) => (
   <form onSubmit={onSubmit} className="max-w-xl mx-auto space-y-4 py-8">
     <input
@@ -29,14 +27,6 @@ const UrlForm: React.FC<UrlFormProps> = ({
       placeholder="Which URL would you like to analyze?"
       className="w-full p-3 border rounded shadow-md"
     />
-
-    <select
-      value={industry}
-      onChange={e => setIndustry(e.target.value)}
-      className="hidden" // Hidden if industry select is not visible in your design
-    >
-      {industries.map(opt => <option key={opt}>{opt}</option>)}
-    </select>
 
     <input
       type="email"

@@ -5,25 +5,18 @@ from email_validator import validate_email, EmailNotValidError
 class UrlRequest(BaseModel):
     url: HttpUrl
     report_type: Literal["basic", "deep"]  # Restricting to specific values using Literal
-    industry: Literal["finance", "technology", "healthcare", "education", "fashion", "e-commerce"]  # Restricting to specific values using Literal
     email: Optional[EmailStr] = None
 
     allowed_report_types: ClassVar[list[str]] = ["basic", "deep"]
-    allowed_industries: ClassVar[list[str]] = ["finance", "technology", "healthcare", "education", "fashion", "e-commerce"]
 
     # Using @model_validator for overall validation at the model level
     @model_validator(mode="before")
     def validate_fields(cls, values):
         report_type = values.get('report_type')
-        industry = values.get('industry')
 
         # Validate report_type
         if report_type not in cls.allowed_report_types:
             raise ValueError(f"Invalid report_type '{report_type}'. Valid options are: {', '.join(cls.allowed_report_types)}")
-
-        # Validate industry
-        if industry not in cls.allowed_industries:
-            raise ValueError(f"Invalid industry '{industry}'. Valid options are: {', '.join(cls.allowed_industries)}")
 
         # Email validation if provided
         email = values.get('email')

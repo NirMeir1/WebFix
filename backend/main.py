@@ -47,7 +47,6 @@ async def analyze_url(requestUserAgent: Request, request: UrlRequest, background
     jwt_data = {
         "url": request.url,
         "report_type": request.report_type,
-        "industry": request.industry,
         "email": request.email
     }
 
@@ -69,10 +68,9 @@ async def analyze_url(requestUserAgent: Request, request: UrlRequest, background
         is_cached, output = await run_cache.run(
             url=request.url,
             report_type=request.report_type,
-            industry=request.industry,
             email=request.email,
             gpt_func=lambda: gpt_instance.generate_gpt_report(
-                request.url, request.report_type, request.industry
+                request.url, request.report_type
             )
         )
 
@@ -110,7 +108,6 @@ async def email_verification(token: str, background_tasks: BackgroundTasks):
         email = decoded['email']
         url = decoded['url']
         report_type = decoded['report_type']
-        industry = decoded['industry']
 
         logger.info(f"Email verified: {email}")
 
@@ -119,10 +116,9 @@ async def email_verification(token: str, background_tasks: BackgroundTasks):
         is_cached, output = await run_cache.run(
             url=url,
             report_type=report_type,
-            industry=industry,
             email=email,
             gpt_func=lambda: gpt_instance.generate_gpt_report(
-                url, report_type, industry, email
+                url, report_type, email
             )
         )
 

@@ -33,7 +33,6 @@ def test_set_and_get(redis_handler):
     test_data = {
         "url": "http://example.com/path?query=1",
         "report_type": "basic",
-        "industry": "tech",
         "email": "test@example.com",
         "gpt_output": "Test output"
     }
@@ -55,7 +54,6 @@ def test_classify_url(redis_handler):
     test_data = {
         "url": url,
         "report_type": "basic",
-        "industry": "tech",
         "email": "test@example.com",
         "gpt_output": "Output A"
     }
@@ -74,7 +72,6 @@ def test_classify_url(redis_handler):
 async def test_cache_manager_run(cache_manager):
     url = "http://example.com/path?query=1"
     report_type = "basic"
-    industry = "tech"
     email = "test@example.com"
     
     # Define a dummy async GPT function.
@@ -82,13 +79,13 @@ async def test_cache_manager_run(cache_manager):
         return "Dummy GPT output"
     
     # First call should invoke the GPT function (cache miss).
-    message, output = await cache_manager.run(url, report_type, industry, email, dummy_gpt)
+    message, output = await cache_manager.run(url, report_type, email, dummy_gpt)
     assert output == "Dummy GPT output"
     # When not cached, classify_url returns "Z" so the returned message is based on that.
     assert message == "Message Type Z"
     
     # Second call should hit the cache.
-    message2, output2 = await cache_manager.run(url, report_type, industry, email, dummy_gpt)
+    message2, output2 = await cache_manager.run(url, report_type, email, dummy_gpt)
     assert output2 == "Dummy GPT output"
     # When retrieved from cache, get() returns "Message Type A".
     assert message2 == "Message Type A"

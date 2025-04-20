@@ -12,7 +12,7 @@ class ChatGPTService:
         self.model = "gpt-4o-mini"
         logger.info("ChatGPTService initialized with model %s", self.model)
 
-    async def generate_response(self, url: str, report_type: str, industry: str, email: Optional[str] = None) -> str:
+    async def generate_response(self, url: str, report_type: str, email: Optional[str] = None) -> str:
         logger.info(f"Generating response for URL: {url}")
 
         # Select the appropriate template file based on report_type
@@ -31,7 +31,6 @@ class ChatGPTService:
         # Replace the placeholders in the template with the values
         system_prompt = template.replace("{url}", str(url))
                                 # .replace("{report_type}", report_type) \
-                                # .replace("{industry}", industry) \
                                 # .replace("{email}", str(email) if email else "")
 
         # Print the system prompt for validation
@@ -96,9 +95,9 @@ class ChatGPTService:
             logger.error(f"Error generating response for URL: {url}, Error: {str(e)}")
             raise
     
-    async def generate_gpt_report(self, url: str, report_type: str, industry: str, email: Optional[str] = None) -> str:
+    async def generate_gpt_report(self, url: str, report_type: str, email: Optional[str] = None) -> str:
         """
         Helper function to generate a GPT response using the ChatGPTService.
         """
-        output = await self.generate_response(url, report_type, industry, email)
+        output = await self.generate_response(url, report_type, email)
         return output
