@@ -95,12 +95,14 @@ function getColorClass(score: number): string {
 interface ReportDetailsProps {
   reportText: unknown
   view: 'desktop' | 'mobile'
+  isCached?: boolean
 }
 
 /**
  * Renders parsed report sections based on selected view.
  */
-const ReportDetails: React.FC<ReportDetailsProps> = ({ reportText, view }) => {
+const ReportDetails: React.FC<ReportDetailsProps> = ({ reportText, view, isCached = false }) => {
+  console.log('🔍 isCached prop =', isCached)
   const sections = useMemo(() => {
     const { desktop, mobile } = parseSections(reportText)
     const source = view === 'desktop' ? desktop : mobile
@@ -113,6 +115,19 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({ reportText, view }) => {
 
   return (
     <div className="w-full space-y-4">
+
+      {/* Display cache message if data is cached */}
+      {isCached && (
+        <div className="bg-yellow-200 p-4 rounded-md text-center text-lg leading-relaxed">
+          Hi there! 
+          Since you’ve already generated this report within the past 7 days, 
+          we’re presenting it to you again without re-testing the live data. 
+          We recommend waiting at least 7 days 
+          for meaningful changes to take effect before running a new report. 
+          Thanks for your understanding! 😊
+        </div>
+      )}
+
       {sections.map(({ title, content, score, colorClass }) => (
         <ReportItem
           key={title}

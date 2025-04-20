@@ -29,6 +29,8 @@ const App: React.FC = () => {
   const [showReport, setShowReport] = useState(false);
   const [screenshot, setScreenshot] = useState('');
   const [loadingMessage, setLoadingMessage] = useState('');
+  const [isCached, setIsCached] = useState(false)
+
 
   useEffect(() => {
     axios.get('http://127.0.0.1:8000')
@@ -70,13 +72,16 @@ const App: React.FC = () => {
         report_type: reportType,
       });
 
+      const { output, screenshot_base64, is_cached } = res.data
+
       if (res.data.token) {
         localStorage.setItem('jwt', res.data.token);
       }
 
-      setResponse(res.data);
-      setScreenshot(`data:image/png;base64,${res.data.screenshot_base64}`);
-      setShowReport(true);  // Show report after successful fetch
+      setResponse(output)                                        // store the actual report text
+      setScreenshot(`data:image/png;base64,${screenshot_base64}`) 
+      setIsCached(is_cached)                                     // store the cache‐flag
+      setShowReport(true)
       
     } catch (err) {
       const axiosError = err as AxiosError;
@@ -114,7 +119,7 @@ const App: React.FC = () => {
       </PageLayout>
       
       ) : (
-        <ReportPage url={url} response={response || ''} screenshot={screenshot} />
+        <ReportPage url={url} response={response || ''} screenshot={screenshot} isCached={isCached}/>
       )}
     </>
   );

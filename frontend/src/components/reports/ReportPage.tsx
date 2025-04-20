@@ -7,9 +7,10 @@ interface ReportPageProps {
   url: string;
   response: string;
   screenshot: string;
+  isCached: boolean;
 }
 
-const ReportPage: React.FC<ReportPageProps> = ({ url, response, screenshot }) => {
+const ReportPage: React.FC<ReportPageProps> = ({ url, response, screenshot, isCached }) => {
   const [view, setView] = useState<'desktop' | 'mobile'>('desktop');
 
   return (
@@ -55,7 +56,7 @@ const ReportPage: React.FC<ReportPageProps> = ({ url, response, screenshot }) =>
           </div>
 
           {/* Report Sections */}
-          <ReportDetails reportText={response} view={view} />
+          <ReportDetails reportText={response} view={view} isCached={isCached}/>
         </div>
 
         {/* Right Column (Screenshot Placeholder) */}

@@ -76,6 +76,8 @@ async def analyze_url(requestUserAgent: Request, request: UrlRequest, background
             )
         )
 
+        print(f"Is Cached: {is_cached}")
+
         print(f"Output: {output}")
 
         logger.info(f"GPT response generated for URL: {request.url}")

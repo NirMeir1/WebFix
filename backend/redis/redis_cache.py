@@ -11,7 +11,7 @@ class RedisCacheHandler:
             password=password,
             decode_responses=True,
         )
-        self.ttl = 86400  # 24 hours
+        self.ttl = 86400 * 7  # 7 days
 
     def _get_base_url(self, url: str) -> str:
         parsed = urlparse(url)
