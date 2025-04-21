@@ -52,7 +52,7 @@ against the provided schema without error.
   - `pages` (`home`, `category`, `product`, `cart`, `checkout`, `footer`),  
   - **each** page with `desktop` and `mobile` objects containing:  
     - `criteria`: array of `{ criterion: string, finding: string, score: integer 1–5 }`  
-    - `average_score`: number (1–5)  
+    - `average_score`: number (2–5)  
     - `label`: one of `"Excellent"`, `"Good"`, `"Can Be Improved"`, `"Bad"`  
     - `recommendations`: array of strings  
 - **No** extra properties or nesting allowed.  
