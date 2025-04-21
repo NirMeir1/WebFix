@@ -3,9 +3,7 @@ import axios, { AxiosError } from 'axios';
 import UrlForm from './components/UrlForm';
 import ReportPage from './components/reports/ReportPage';
 import PageLayout from './components/layout/PageLayout';
-
-// Define your industries once and pass them as props
-const industries = ['Technology', 'Finance', 'Healthcare', 'Education', 'Fashion', 'Other'];
+import { ReportSchema } from './components/reports/ReportDetails';
 
 // Simple URL validator using the URL constructor.
 const isValidUrl = (url: string): boolean => {
@@ -22,7 +20,7 @@ const App: React.FC = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [response, setResponse] = useState<string | null>(null);
+  const [report, setReport] = useState<ReportSchema | null>(null)
   const [reportType, setReportType] = useState<'basic' | 'deep'>('basic');
   const [message, setMessage] = useState('');
   const [showReport, setShowReport] = useState(false);
@@ -44,7 +42,7 @@ const App: React.FC = () => {
   const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
-    setResponse(null);
+    setReport(null);
 
     if (!isValidUrl(url)) {
       setError('Please enter a valid URL.');
@@ -75,8 +73,10 @@ const App: React.FC = () => {
       if (res.data.token) {
         localStorage.setItem('jwt', res.data.token);
       }
-
-      setResponse(output)                                        // store the actual report text
+      
+      const parsed: ReportSchema =
+        typeof output === 'string' ? JSON.parse(output) : output;
+      setReport(parsed);
       setScreenshot(`data:image/png;base64,${screenshot_base64}`) 
       setIsCached(is_cached)                                     // store the cache‐flag
       setShowReport(true)
@@ -103,7 +103,6 @@ const App: React.FC = () => {
               loading={loading}
               loadingMessage={loadingMessage}
               reportType={reportType}
-              industries={industries}
               setUrl={setUrl}
               setEmail={setEmail}
               setReportType={setReportType}
@@ -115,7 +114,7 @@ const App: React.FC = () => {
       </PageLayout>
       
       ) : (
-        <ReportPage url={url} response={response || ''} screenshot={screenshot} isCached={isCached}/>
+        <ReportPage url={url} report={report!} screenshot={screenshot} isCached={isCached}/>
       )}
     </>
   );

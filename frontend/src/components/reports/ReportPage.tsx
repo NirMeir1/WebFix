@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import ReportDetails from './ReportDetails';
 import PageLayout from '../layout/PageLayout';
 import { ArrowLeft } from 'lucide-react';
+import ReportDetails, { ReportSchema } from './ReportDetails';
 
 interface ReportPageProps {
   url: string;
-  response: string;
+  report: ReportSchema;
   screenshot: string;
   isCached: boolean;
 }
 
-const ReportPage: React.FC<ReportPageProps> = ({ url, response, screenshot, isCached }) => {
+const ReportPage: React.FC<ReportPageProps> = ({ url, report, screenshot, isCached }) => {
   const [view, setView] = useState<'desktop' | 'mobile'>('desktop');
 
   return (
@@ -56,7 +56,7 @@ const ReportPage: React.FC<ReportPageProps> = ({ url, response, screenshot, isCa
           </div>
 
           {/* Report Sections */}
-          <ReportDetails reportText={response} view={view} isCached={isCached}/>
+          <ReportDetails report={report as ReportSchema} view={view} isCached={isCached}/>
         </div>
 
         {/* Right Column (Screenshot Placeholder) */}

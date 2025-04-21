@@ -7,7 +7,6 @@ interface UrlFormProps {
   email: string;
   loading: boolean;
   reportType: 'basic' | 'deep';
-  industries: string[];
   loadingMessage: string;
   setUrl: React.Dispatch<React.SetStateAction<string>>;
   setEmail: React.Dispatch<React.SetStateAction<string>>;

@@ -1,0 +1,130 @@
+{
+    "type": "object",
+    "required": [
+    "schema_version",
+    "site",
+    "generated_at",
+    "pages"
+    ],
+    "properties": {
+    "site": {
+        "type": "string"
+    },
+    "pages": {
+        "type": "object",
+        "required": [
+        "home",
+        "category",
+        "product",
+        "cart",
+        "checkout",
+        "footer"
+        ],
+        "properties": {
+        "cart": {
+            "$ref": "#/definitions/pageReport"
+        },
+        "home": {
+            "$ref": "#/definitions/pageReport"
+        },
+        "footer": {
+            "$ref": "#/definitions/pageReport"
+        },
+        "product": {
+            "$ref": "#/definitions/pageReport"
+        },
+        "category": {
+            "$ref": "#/definitions/pageReport"
+        },
+        "checkout": {
+            "$ref": "#/definitions/pageReport"
+        }
+        },
+        "additionalProperties": false
+    },
+    "generated_at": {
+        "type": "string"
+    },
+    "schema_version": {
+        "type": "string"
+    },
+    "overall_observations": {
+        "type": "string"
+    }
+    },
+    "definitions": {
+    "criterion": {
+        "type": "object",
+        "required": [
+        "criterion",
+        "finding",
+        "score"
+        ],
+        "properties": {
+        "score": {
+            "type": "integer"
+        },
+        "finding": {
+            "type": "string"
+        },
+        "criterion": {
+            "type": "string"
+        }
+        },
+        "additionalProperties": false
+    },
+    "pageReport": {
+        "type": "object",
+        "required": [
+        "desktop",
+        "mobile"
+        ],
+        "properties": {
+        "mobile": {
+            "$ref": "#/definitions/deviceReport"
+        },
+        "desktop": {
+            "$ref": "#/definitions/deviceReport"
+        }
+        },
+        "additionalProperties": false
+    },
+    "deviceReport": {
+        "type": "object",
+        "required": [
+        "criteria",
+        "average_score",
+        "label",
+        "recommendations"
+        ],
+        "properties": {
+        "label": {
+            "enum": [
+            "Excellent",
+            "Good",
+            "Can Be Improved",
+            "Bad"
+            ],
+            "type": "string"
+        },
+        "criteria": {
+            "type": "array",
+            "items": {
+            "$ref": "#/definitions/criterion"
+            }
+        },
+        "average_score": {
+            "type": "number"
+        },
+        "recommendations": {
+            "type": "array",
+            "items": {
+            "type": "string"
+            }
+        }
+        },
+        "additionalProperties": false
+    }
+    },
+    "additionalProperties": false
+}

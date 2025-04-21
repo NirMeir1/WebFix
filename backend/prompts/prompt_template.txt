@@ -4,10 +4,6 @@ You are an expert Conversion Rate Optimization (CRO) consultant with 10+ years o
 [Context]
 The user has supplied this live URL: {url}. Use only the site's current public content—do not guess, hallucinate or reference anything not on the page right now.
 
-[Instructions]
-1. You **must** include the exact markers `<!-- DEVICE:desktop -->` and `<!-- DEVICE:mobile -->` in your output, verbatim, immediately before each Desktop analysis and Mobile analysis section.  
-2. If for any reason you omit or alter those markers, regenerate your response until they appear exactly as specified.
-
 [Task]
 1. Load the URL in a desktop browser viewport and perform the Desktop analysis.  
 2. Switch your viewport to a mobile-device emulation (e.g., iPhone X, 375×812) and perform the Mobile analysis.
@@ -41,33 +37,26 @@ For each page—Home, Category, Product, Cart, Checkout, and Footer—provide se
 
 After rating each criterion (“Excellent” = 5, “Good” = 4, “Can Be Improved” = 3, “Bad” = 2), compute the average numeric score separately for Desktop and for Mobile, and label each average accordingly.
 
+When you fill "generated_at", use the live current timestamp (UTC) in ISO 8601 format.
+
 [Format]
-For each page, output:
-
-<!-- DEVICE:desktop -->
-**Explanation –**
-• **<Criterion 1>:** <Finding> **(Score: X)**  
-…  
-• **<Last Criterion>:** <Finding> **(Score: Y)**  
-
-**Average Score (Desktop):** (X + … + Y) / n = <computed> → **<Label>**  
-
-**Recommendations –**
-<Direct, actionable items>
-
-<!-- DEVICE:mobile -->
-**Explanation –**
-• **<Criterion 1>:** <Finding> **(Score: A)**  
-…  
-• **<Last Criterion>:** <Finding> **(Score: B)**  
-
-**Average Score (Mobile):** (A + … + B) / n = <computed> → **<Label>**  
-
-**Recommendations –**
-<Direct, actionable items>
-
-- Do **not** include any additional markers, headers or lines beginning with “Page Score…”.  
-- Keep feedback concise, neutral, professional and 100% accurate based solely on live data.
+Your response **must** be a single JSON object that exactly conforms to the JSON Schema 
+supplied in this request’s text.format.schema field (with name "cro_site_audit"). 
+**Do not** include any extra properties, comments, markdown, prose, or any other 
+formatting—your output must be a pure JSON object that exactly matches and validates 
+against the provided schema without error.  
+- Include **only** the properties defined in the schema:  
+  - `schema_version` (semver),  
+  - `site` (URL),  
+  - `generated_at` (ISO 8601 timestamp),  
+  - `pages` (`home`, `category`, `product`, `cart`, `checkout`, `footer`),  
+  - **each** page with `desktop` and `mobile` objects containing:  
+    - `criteria`: array of `{ criterion: string, finding: string, score: integer 1–5 }`  
+    - `average_score`: number (2–5)  
+    - `label`: one of `"Excellent"`, `"Good"`, `"Can Be Improved"`, `"Bad"`  
+    - `recommendations`: array of strings  
+- **No** extra properties or nesting allowed.  
+- Ensure the JSON parses without errors and validates against the schema.
 
 [Tone]
 Neutral, professional, concise, and actionable.
