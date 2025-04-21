@@ -78,7 +78,9 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({ report, view, isCached = 
 
         // Compose full content
         const parts: string[] = []
-        parts.push(criteriaLines.join('\n'))
+        parts.push(
+          ['**Explanation –**', ...criteriaLines].join('\n')
+        )
         parts.push(avgLine)
         if (recLines.length) {
           parts.push(['**Recommendations –**', ...recLines].join('\n'))
