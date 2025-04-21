@@ -52,7 +52,139 @@ class ChatGPTService:
                 ],
                 text={
                     "format": {
-                    "type": "text"
+                    "type": "json_schema",
+                    "name": "cro_site_audit",
+                    "schema": {
+                        "type": "object",
+                        "required": [
+                        "schema_version",
+                        "site",
+                        "generated_at",
+                        "pages"
+                        ],
+                        "properties": {
+                        "site": {
+                            "type": "string"
+                        },
+                        "pages": {
+                            "type": "object",
+                            "required": [
+                            "home",
+                            "category",
+                            "product",
+                            "cart",
+                            "checkout",
+                            "footer"
+                            ],
+                            "properties": {
+                            "cart": {
+                                "$ref": "#/definitions/pageReport"
+                            },
+                            "home": {
+                                "$ref": "#/definitions/pageReport"
+                            },
+                            "footer": {
+                                "$ref": "#/definitions/pageReport"
+                            },
+                            "product": {
+                                "$ref": "#/definitions/pageReport"
+                            },
+                            "category": {
+                                "$ref": "#/definitions/pageReport"
+                            },
+                            "checkout": {
+                                "$ref": "#/definitions/pageReport"
+                            }
+                            },
+                            "additionalProperties": False
+                        },
+                        "generated_at": {
+                            "type": "string"
+                        },
+                        "schema_version": {
+                            "type": "string"
+                        },
+                        "overall_observations": {
+                            "type": "string"
+                        }
+                        },
+                        "definitions": {
+                        "criterion": {
+                            "type": "object",
+                            "required": [
+                            "criterion",
+                            "finding",
+                            "score"
+                            ],
+                            "properties": {
+                            "score": {
+                                "type": "integer"
+                            },
+                            "finding": {
+                                "type": "string"
+                            },
+                            "criterion": {
+                                "type": "string"
+                            }
+                            },
+                            "additionalProperties": False
+                        },
+                        "pageReport": {
+                            "type": "object",
+                            "required": [
+                            "desktop",
+                            "mobile"
+                            ],
+                            "properties": {
+                            "mobile": {
+                                "$ref": "#/definitions/deviceReport"
+                            },
+                            "desktop": {
+                                "$ref": "#/definitions/deviceReport"
+                            }
+                            },
+                            "additionalProperties": False
+                        },
+                        "deviceReport": {
+                            "type": "object",
+                            "required": [
+                            "criteria",
+                            "average_score",
+                            "label",
+                            "recommendations"
+                            ],
+                            "properties": {
+                            "label": {
+                                "enum": [
+                                "Excellent",
+                                "Good",
+                                "Can Be Improved",
+                                "Bad"
+                                ],
+                                "type": "string"
+                            },
+                            "criteria": {
+                                "type": "array",
+                                "items": {
+                                "$ref": "#/definitions/criterion"
+                                }
+                            },
+                            "average_score": {
+                                "type": "number"
+                            },
+                            "recommendations": {
+                                "type": "array",
+                                "items": {
+                                "type": "string"
+                                }
+                            }
+                            },
+                            "additionalProperties": False
+                        }
+                        },
+                        "additionalProperties": False
+                    },
+                    "strict": False
                     }
                 },
                 reasoning={},
@@ -62,17 +194,15 @@ class ChatGPTService:
                     "user_location": {
                         "type": "approximate"
                     },
-                    "search_context_size": "medium" 
+                    "search_context_size": "medium"
                     }
                 ],
-                tool_choice={
-                    "type": "web_search"
-                },
+                tool_choice="none",
                 temperature=0.1,
-                max_output_tokens=2250, # need to play with this to get the right size
-                top_p=1.0,
+                max_output_tokens=2508,
+                top_p=1,
                 store=True
-            )
+                )
 
             logger.info(f"Response generated for URL: {url}")
 
