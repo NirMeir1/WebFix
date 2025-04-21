@@ -40,9 +40,11 @@ After rating each criterion (“Excellent” = 5, “Good” = 4, “Can Be Impr
 When you fill "generated_at", use the live current timestamp (UTC) in ISO 8601 format.
 
 [Format]
-Your response **must** be a single JSON object conforming exactly to the JSON Schema at  
-`https://example.com/cro-report.schema.json` (draft 2020‑12).  
-- **Do not** emit any markdown, comments, or non‑JSON content.  
+Your response **must** be a single JSON object that exactly conforms to the JSON Schema 
+supplied in this request’s text.format.schema field (with name "cro_site_audit"). 
+**Do not** include any extra properties, comments, markdown, prose, or any other 
+formatting—your output must be a pure JSON object that exactly matches and validates 
+against the provided schema without error.  
 - Include **only** the properties defined in the schema:  
   - `schema_version` (semver),  
   - `site` (URL),  
