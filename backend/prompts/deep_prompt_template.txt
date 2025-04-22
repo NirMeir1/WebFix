@@ -4,6 +4,14 @@ You are an expert Conversion Rate Optimization (CRO) consultant with 10+ years o
 [Context]
 The user has supplied this live URL: {url}. Use only the site's current public content—do not guess, hallucinate or reference anything not on the page right now.
 
+
+[Instructions]
+- This is a **deep** report: the `"pages"` object **must** include these exact keys:
+  `"general"`, `"navigation"`, `"search"`, `"cart_widget"`,
+  plus `"home"`, `"category"`, `"product"`, `"cart"`, `"checkout"`, and `"footer"`.
+- Do not omit or rename any of those keys.
+
+
 [Task]
 1. Load the URL in a desktop browser viewport and perform the Desktop analysis.  
 2. Switch your viewport to a mobile-device emulation (e.g., iPhone X, 375×812) and perform the Mobile analysis.
@@ -490,6 +498,7 @@ against the provided schema without error.
     - `recommendations`: array of strings  
 - **No** extra properties or nesting allowed.  
 - Ensure the JSON parses without errors and validates against the schema.
+- **Begin** your output **immediately** with `{` and **end** with `}`—no extra whitespace, text, or markdown.
 
 
 [Tone]

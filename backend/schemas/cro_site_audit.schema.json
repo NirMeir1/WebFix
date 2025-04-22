@@ -1,130 +1,145 @@
 {
-    "type": "object",
-    "required": [
+  "type": "object",
+  "required": [
     "schema_version",
     "site",
     "generated_at",
     "pages"
-    ],
-    "properties": {
+  ],
+  "properties": {
     "site": {
-        "type": "string"
+      "type": "string"
     },
     "pages": {
-        "type": "object",
-        "required": [
-        "home",
-        "category",
-        "product",
-        "cart",
-        "checkout",
-        "footer"
-        ],
-        "properties": {
-        "cart": {
-            "$ref": "#/definitions/pageReport"
-        },
-        "home": {
-            "$ref": "#/definitions/pageReport"
-        },
-        "footer": {
-            "$ref": "#/definitions/pageReport"
-        },
-        "product": {
-            "$ref": "#/definitions/pageReport"
-        },
-        "category": {
-            "$ref": "#/definitions/pageReport"
-        },
-        "checkout": {
-            "$ref": "#/definitions/pageReport"
+      "type": "object",
+      "properties": {
+        "cart":      { "$ref": "#/definitions/pageReport" },
+        "home":      { "$ref": "#/definitions/pageReport" },
+        "footer":    { "$ref": "#/definitions/pageReport" },
+        "product":   { "$ref": "#/definitions/pageReport" },
+        "category":  { "$ref": "#/definitions/pageReport" },
+        "checkout":  { "$ref": "#/definitions/pageReport" },
+        "general":      { "$ref": "#/definitions/pageReport" },
+        "navigation":   { "$ref": "#/definitions/pageReport" },
+        "search":       { "$ref": "#/definitions/pageReport" },
+        "cart_widget":  { "$ref": "#/definitions/pageReport" }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "required": ["general"]
+          },
+          "then": {
+            "required": [
+              "home",
+              "category",
+              "product",
+              "cart",
+              "checkout",
+              "footer",
+              "general",
+              "navigation",
+              "search",
+              "cart_widget"
+            ]
+          },
+          "else": {
+            "required": [
+              "home",
+              "category",
+              "product",
+              "cart",
+              "checkout",
+              "footer"
+            ]
+          }
         }
-        },
-        "additionalProperties": false
+      ]
     },
     "generated_at": {
-        "type": "string"
+      "type": "string"
     },
     "schema_version": {
-        "type": "string"
+      "type": "string"
     },
     "overall_observations": {
-        "type": "string"
+      "type": "string"
     }
-    },
-    "definitions": {
+  },
+  "definitions": {
     "criterion": {
-        "type": "object",
-        "required": [
+      "type": "object",
+      "required": [
         "criterion",
         "finding",
         "score"
-        ],
-        "properties": {
+      ],
+      "properties": {
         "score": {
-            "type": "integer"
+          "type": "integer"
         },
         "finding": {
-            "type": "string"
+          "type": "string"
         },
         "criterion": {
-            "type": "string"
+          "type": "string"
         }
-        },
-        "additionalProperties": false
+      },
+      "additionalProperties": false
     },
     "pageReport": {
-        "type": "object",
-        "required": [
+      "type": "object",
+      "required": [
         "desktop",
         "mobile"
-        ],
-        "properties": {
+      ],
+      "properties": {
         "mobile": {
-            "$ref": "#/definitions/deviceReport"
+          "$ref": "#/definitions/deviceReport"
         },
         "desktop": {
-            "$ref": "#/definitions/deviceReport"
+          "$ref": "#/definitions/deviceReport"
         }
-        },
-        "additionalProperties": false
+      },
+      "additionalProperties": false
     },
     "deviceReport": {
-        "type": "object",
-        "required": [
+      "type": "object",
+      "required": [
         "criteria",
         "average_score",
         "label",
         "recommendations"
-        ],
-        "properties": {
+      ],
+      "properties": {
         "label": {
-            "enum": [
+          "type": "string",
+          "enum": [
             "Excellent",
             "Good",
             "Can Be Improved",
             "Bad"
-            ],
-            "type": "string"
+          ]
         },
         "criteria": {
-            "type": "array",
-            "items": {
+          "type": "array",
+          "items": {
             "$ref": "#/definitions/criterion"
-            }
+          }
         },
         "average_score": {
-            "type": "number"
+          "type": "number"
         },
         "recommendations": {
-            "type": "array",
-            "items": {
+          "type": "array",
+          "items": {
             "type": "string"
-            }
+          }
         }
-        },
-        "additionalProperties": false
+      },
+      "additionalProperties": false
     }
-    },
-    "additionalProperties": false
+  },
+  "additionalProperties": false
 }
