@@ -114,7 +114,7 @@ const App: React.FC = () => {
       </PageLayout>
       
       ) : (
-        <ReportPage url={url} report={report!} screenshot={screenshot} isCached={isCached}/>
+        <ReportPage url={url} report={report!} screenshot={screenshot} isCached={isCached} reportType={reportType}/>
       )}
     </>
   );

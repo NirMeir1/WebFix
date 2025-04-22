@@ -14,7 +14,17 @@ interface PageViewData {
 
 export interface ReportSchema {
   pages: Record<
-    'home' | 'category' | 'product' | 'cart' | 'checkout' | 'footer',
+    | 'home'
+    | 'category'
+    | 'product'
+    | 'cart'
+    | 'checkout'
+    | 'footer'
+    // Deep-only sections
+    | 'general'
+    | 'navigation'
+    | 'search'
+    | 'cart_widget',
     { desktop: PageViewData; mobile: PageViewData }
   >
 }
@@ -30,6 +40,7 @@ interface ReportDetailsProps {
   report: ReportSchema
   view: 'desktop' | 'mobile'
   isCached?: boolean
+  reportType: 'basic' | 'deep';
 }
 
 const pageOrder: { key: keyof ReportSchema['pages']; title: string }[] = [
@@ -41,6 +52,14 @@ const pageOrder: { key: keyof ReportSchema['pages']; title: string }[] = [
   { key: 'footer', title: 'FOOTER' },
 ]
 
+// Extra sections for deep reports
+const deepPageOrder: { key: keyof ReportSchema['pages']; title: string }[] = [
+  { key: 'general', title: 'GENERAL' },
+  { key: 'navigation', title: 'NAVIGATION' },
+  { key: 'search', title: 'SEARCH' },
+  { key: 'cart_widget', title: 'CART WIDGET' },
+]
+
 const labelColorMap: Record<string, string> = {
   Excellent: 'bg-green-500',
   Good: 'bg-green-300',
@@ -48,39 +67,40 @@ const labelColorMap: Record<string, string> = {
   Bad: 'bg-red-500',
 }
 
-const ReportDetails: React.FC<ReportDetailsProps> = ({ report, view, isCached = false }) => {
+const ReportDetails: React.FC<ReportDetailsProps> = ({ report, view, isCached = false, reportType }) => {
   const [sections, setSections] = useState<DisplaySection[]>([])
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     try {
-      // Ensure view is lower-case
       const device = view.toLowerCase() as 'desktop' | 'mobile'
 
-      const newSections: DisplaySection[] = pageOrder.map(({ key, title }) => {
+      // Helper to build a section
+      const buildSection = (
+        key: keyof ReportSchema['pages'],
+        title: string
+      ): DisplaySection => {
         const pageData = report.pages[key]?.[device]
         if (!pageData) {
-          throw new Error(`Missing data for page “${key}” (${device})`)
+          throw new Error(`Missing data for section “${key}” (${device})`)
         }
 
-        // Build markdown lines for criteria
+        // Criteria lines
         const criteriaLines = pageData.criteria.map(
           c => `• **${c.criterion}:** ${c.finding} (Score: ${c.score})`
         )
 
-        // Average score and label
+        // Average score line
         const avgLine =
-          `**Average Score (${device.charAt(0).toUpperCase() + device.slice(1)}):** ` +
-          `${pageData.average_score} → ${pageData.label}`
+          `**Average Score (${
+            device.charAt(0).toUpperCase() + device.slice(1)
+          }):** ${pageData.average_score} → ${pageData.label}`
 
         // Recommendations
         const recLines = pageData.recommendations.map(r => `• ${r}`)
 
-        // Compose full content
         const parts: string[] = []
-        parts.push(
-          ['**Explanation –**', ...criteriaLines].join('\n')
-        )
+        parts.push(['**Explanation –**', ...criteriaLines].join('\n'))
         parts.push(avgLine)
         if (recLines.length) {
           parts.push(['**Recommendations –**', ...recLines].join('\n'))
@@ -92,16 +112,29 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({ report, view, isCached = 
           score: pageData.average_score,
           colorClass: labelColorMap[pageData.label] || 'bg-gray-300',
         }
-      })
+      }
 
-      setSections(newSections)
+      // Build base sections
+      const baseSections = pageOrder.map(({ key, title }) =>
+        buildSection(key, title)
+      )
+
+      // Append deep-only sections if needed
+      const allSections =
+        reportType === 'deep'
+          ? baseSections.concat(
+              deepPageOrder.map(({ key, title }) => buildSection(key, title))
+            )
+          : baseSections
+
+      setSections(allSections)
       setError(null)
     } catch (e) {
       console.error('Failed to process report data', e)
       setSections([])
       setError('Failed to load report data.')
     }
-  }, [report, view])
+  }, [report, view, reportType])
 
   if (error) {
     return <div className="text-red-500">{error}</div>
