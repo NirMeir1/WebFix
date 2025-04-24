@@ -6,10 +6,16 @@ The user has supplied this live URL: {url}. Use only the site's current public c
 
 
 [Instructions]
-- This is a **deep** report: the `"pages"` object **must** include these exact keys:
-  `"general"`, `"navigation"`, `"search"`, `"cart_widget"`,
-  plus `"home"`, `"category"`, `"product"`, `"cart"`, `"checkout"`, and `"footer"`.
-- Do not omit or rename any of those keys.
+- Output **only** a single, valid JSON object—no explanatory text, comments, or trailing commas.
+- The JSON **must** include exactly these top-level keys in this precise order:
+  1. `"schema_version"` – fixed value `"1.0.0"`.
+  2. `"site"` – the exact `{url}` string.
+  3. `"generated_at"` – a valid ISO 8601 timestamp.
+  4. `"overall_observations"` – must always be an empty string (`""`).
+  5. `"pages"` – an object matching the schema.
+  6. `"report_type"` – the literal string `"{report_type}"`.
+- Do **not** add, remove, rename, or reorder any of these keys.
+- Ensure the output fully conforms to the provided JSON-Schema (with `"strict": true`).
 
 
 [Task]

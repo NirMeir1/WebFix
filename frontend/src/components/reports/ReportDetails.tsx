@@ -40,7 +40,7 @@ interface ReportDetailsProps {
   report: ReportSchema
   view: 'desktop' | 'mobile'
   isCached?: boolean
-  reportType: 'basic' | 'deep';
+  reportType: 'basic' | 'deep'
 }
 
 const pageOrder: { key: keyof ReportSchema['pages']; title: string }[] = [
@@ -75,14 +75,15 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({ report, view, isCached = 
     try {
       const device = view.toLowerCase() as 'desktop' | 'mobile'
 
-      // Helper to build a section
+      // Helper to build a section or skip if missing
       const buildSection = (
         key: keyof ReportSchema['pages'],
         title: string
-      ): DisplaySection => {
+      ): DisplaySection | null => {
         const pageData = report.pages[key]?.[device]
         if (!pageData) {
-          throw new Error(`Missing data for section “${key}” (${device})`)
+          // Skip missing section
+          return null
         }
 
         // Criteria lines
@@ -92,11 +93,9 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({ report, view, isCached = 
 
         // Average score line
         const avgLine =
-          `**Average Score (${
-            device.charAt(0).toUpperCase() + device.slice(1)
-          }):** ${pageData.average_score} → ${pageData.label}`
+          `**Average Score (${device.charAt(0).toUpperCase() + device.slice(1)}):** ${pageData.average_score} → ${pageData.label}`
 
-        // Recommendations
+        // Recommendations lines
         const recLines = pageData.recommendations.map(r => `• ${r}`)
 
         const parts: string[] = []
@@ -114,23 +113,22 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({ report, view, isCached = 
         }
       }
 
-      // Build base sections
-      const baseSections = pageOrder.map(({ key, title }) =>
-        buildSection(key, title)
-      )
+      // Build and filter base sections
+      const baseSections = pageOrder
+        .map(({ key, title }) => buildSection(key, title))
+        .filter((s): s is DisplaySection => s !== null)
 
-      // Append deep-only sections if needed
-      const allSections =
-        reportType === 'deep'
-          ? baseSections.concat(
-              deepPageOrder.map(({ key, title }) => buildSection(key, title))
-            )
-          : baseSections
+      // Build and filter deep-only sections if needed
+      const deepSections = reportType === 'deep'
+        ? deepPageOrder
+            .map(({ key, title }) => buildSection(key, title))
+            .filter((s): s is DisplaySection => s !== null)
+        : []
 
-      setSections(allSections)
+      setSections([...baseSections, ...deepSections])
       setError(null)
     } catch (e) {
-      console.error('Failed to process report data', e)
+      console.error('Unexpected error processing report data', e)
       setSections([])
       setError('Failed to load report data.')
     }

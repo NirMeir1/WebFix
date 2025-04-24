@@ -1,3 +1,4 @@
+from copy import deepcopy
 import os
 import json
 import logging
@@ -49,6 +50,7 @@ class ChatGPTService:
     async def _load_template(self, report_type: str) -> str:
         filename = "deep_prompt_template.txt" if report_type == "deep" else "prompt_template.txt"
         path = TEMPLATE_DIR / filename
+        logger.info(f"⚙️ Loading prompt template: {filename}")
         if not path.exists():
             logger.error("Template file not found at %s", path)
             raise ChatGPTError(f"Missing prompt template: {path}")
@@ -61,11 +63,28 @@ class ChatGPTService:
         report_type: str,
         email: Optional[str],
     ) -> str:
-        prompt = template.replace("{url}", url)
+        prompt = template.replace("{url}", url)\
+            .replace("{report_type}", report_type) 
         # extend here if you need {report_type} or {email} placeholders
         return prompt
 
-    def _build_payload(self, system_prompt: str) -> Dict[str, Any]:
+    def _build_payload(self, system_prompt: str, report_type: str) -> Dict[str, Any]:
+        schema = deepcopy(CRO_SCHEMA)
+        pages_schema = schema["properties"]["pages"]
+        props = pages_schema["properties"]
+
+        base_keys = ["home","category","product","cart","checkout","footer"]
+        deep_keys = ["general","navigation","search","cart_widget"]
+
+        if report_type == "basic":
+            # Remove deep‐only properties entirely
+            for key in deep_keys:
+                props.pop(key, None)
+            pages_schema["required"] = base_keys
+        else:
+            # Keep all properties, require all of them
+            pages_schema["required"] = base_keys + deep_keys
+
         return {
             "model": self.model,
             "input": [
@@ -78,8 +97,8 @@ class ChatGPTService:
                 "format": {
                     "type": "json_schema",
                     "name": "cro_site_audit",
-                    "schema": CRO_SCHEMA,
-                    "strict": False,
+                    "schema": schema,
+                    "strict": True,
                 }
             },
             "reasoning": {},
@@ -111,6 +130,7 @@ class ChatGPTService:
             if not message.content:
                 raise ChatGPTError("Assistant returned no content")
             text = message.content[0].text.strip()
+            logger.debug("⚙️ Raw assistant text:\n" + message.content[0].text)
             data = json.loads(text)
         except (IndexError, AttributeError, json.JSONDecodeError) as e:
             logger.error("Parsing assistant response failed: %s", e)
@@ -133,7 +153,7 @@ class ChatGPTService:
         logger.info("Generating CRO report for URL: %s", url)
         template      = await self._load_template(report_type)
         system_prompt = self._build_system_prompt(template, url, report_type, email)
-        payload       = self._build_payload(system_prompt)
+        payload       = self._build_payload(system_prompt, report_type)
         raw           = await self._call_openai(payload)
         return self._parse_and_validate(raw)
 

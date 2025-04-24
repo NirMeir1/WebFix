@@ -4,58 +4,13 @@
     "schema_version",
     "site",
     "generated_at",
-    "pages"
+    "overall_observations",
+    "pages",
+    "report_type"
   ],
   "properties": {
     "site": {
       "type": "string"
-    },
-    "pages": {
-      "type": "object",
-      "properties": {
-        "cart":      { "$ref": "#/definitions/pageReport" },
-        "home":      { "$ref": "#/definitions/pageReport" },
-        "footer":    { "$ref": "#/definitions/pageReport" },
-        "product":   { "$ref": "#/definitions/pageReport" },
-        "category":  { "$ref": "#/definitions/pageReport" },
-        "checkout":  { "$ref": "#/definitions/pageReport" },
-        "general":      { "$ref": "#/definitions/pageReport" },
-        "navigation":   { "$ref": "#/definitions/pageReport" },
-        "search":       { "$ref": "#/definitions/pageReport" },
-        "cart_widget":  { "$ref": "#/definitions/pageReport" }
-      },
-      "additionalProperties": false,
-      "allOf": [
-        {
-          "if": {
-            "required": ["general"]
-          },
-          "then": {
-            "required": [
-              "home",
-              "category",
-              "product",
-              "cart",
-              "checkout",
-              "footer",
-              "general",
-              "navigation",
-              "search",
-              "cart_widget"
-            ]
-          },
-          "else": {
-            "required": [
-              "home",
-              "category",
-              "product",
-              "cart",
-              "checkout",
-              "footer"
-            ]
-          }
-        }
-      ]
     },
     "generated_at": {
       "type": "string"
@@ -65,6 +20,46 @@
     },
     "overall_observations": {
       "type": "string"
+    },
+    "report_type": {
+      "type": "string",
+      "enum": ["basic", "deep"]
+    },
+    "pages": {
+      "type": "object",
+      "properties": {
+        "cart": {
+          "$ref": "#/definitions/pageReport"
+        },
+        "home": {
+          "$ref": "#/definitions/pageReport"
+        },
+        "footer": {
+          "$ref": "#/definitions/pageReport"
+        },
+        "product": {
+          "$ref": "#/definitions/pageReport"
+        },
+        "category": {
+          "$ref": "#/definitions/pageReport"
+        },
+        "checkout": {
+          "$ref": "#/definitions/pageReport"
+        },
+        "general": {
+          "$ref": "#/definitions/pageReport"
+        },
+        "navigation": {
+          "$ref": "#/definitions/pageReport"
+        },
+        "search": {
+          "$ref": "#/definitions/pageReport"
+        },
+        "cart_widget": {
+          "$ref": "#/definitions/pageReport"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "definitions": {
