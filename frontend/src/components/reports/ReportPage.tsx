@@ -8,9 +8,10 @@ interface ReportPageProps {
   report: ReportSchema;
   screenshot: string;
   isCached: boolean;
+  reportType: 'basic' | 'deep';
 }
 
-const ReportPage: React.FC<ReportPageProps> = ({ url, report, screenshot, isCached }) => {
+const ReportPage: React.FC<ReportPageProps> = ({ url, report, screenshot, isCached, reportType }) => {
   const [view, setView] = useState<'desktop' | 'mobile'>('desktop');
 
   return (
@@ -56,7 +57,7 @@ const ReportPage: React.FC<ReportPageProps> = ({ url, report, screenshot, isCach
           </div>
 
           {/* Report Sections */}
-          <ReportDetails report={report as ReportSchema} view={view} isCached={isCached}/>
+          <ReportDetails report={report as ReportSchema} view={view} isCached={isCached} reportType={reportType}/>
         </div>
 
         {/* Right Column (Screenshot Placeholder) */}

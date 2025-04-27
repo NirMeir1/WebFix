@@ -38,6 +38,7 @@ def root():
 async def analyze_url(requestUserAgent: Request, request: UrlRequest, background_tasks: BackgroundTasks):
     start_time = time.time()
     logger.info(f"Processing URL request: {request.url}")
+    logger.info(f"⚙️ Received analyze-url request with report_type: {request.report_type}")
 
     user_agent_str = requestUserAgent.headers.get("User-Agent", "")
     
