@@ -1,3 +1,4 @@
+import json
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
 from backend.schemas import UrlRequest, UrlResponse
 from backend.gpt_service import ChatGPTService
@@ -77,7 +78,10 @@ async def analyze_url(requestUserAgent: Request, request: UrlRequest, background
 
         print(f"Is Cached: {is_cached}")
 
-        print(f"Output: {output}")
+        with open('output.json', 'w', encoding='utf-8') as f:
+            json.dump(output, f, separators=(",", ":"), ensure_ascii=False)
+
+        #print(f"Output: {output}")
 
         logger.info(f"GPT response generated for URL: {request.url}")
 
