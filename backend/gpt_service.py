@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 # ─── Configuration ─────────────────────────────────────────────────────────────
 
 MODEL          = "gpt-4o-mini"
-MAX_TOKENS     = 10000
+MAX_TOKENS     = 7000
 TEMPERATURE    = 0.1
 TOP_P          = 1.0
 STORE          = True
