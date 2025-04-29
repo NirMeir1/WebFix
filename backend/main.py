@@ -78,8 +78,8 @@ async def analyze_url(requestUserAgent: Request, request: UrlRequest, background
 
         print(f"Is Cached: {is_cached}")
 
-        with open('output.json', 'w', encoding='utf-8') as f:
-            json.dump(output, f, separators=(",", ":"), ensure_ascii=False)
+        # with open('output.json', 'w', encoding='utf-8') as f:
+        #   json.dump(output, f, separators=(",", ":"), ensure_ascii=False)
 
         #print(f"Output: {output}")
 
