@@ -68,13 +68,25 @@
       "required": [
         "criterion",
         "finding",
-        "score"
+        "score",
+        "why_it_matters",
+        "why_this_score",
+        "how_to_improve"
       ],
       "properties": {
         "score": {
           "type": "integer"
         },
         "finding": {
+          "type": "string"
+        },
+        "why_it_matters": {
+          "type": "string"
+        },
+        "why_this_score": {
+          "type": "string"
+        },
+        "how_to_improve": {
           "type": "string"
         },
         "criterion": {

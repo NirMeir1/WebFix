@@ -6,6 +6,9 @@ interface PageViewData {
     criterion: string
     finding: string
     score: number
+    why_it_matters: string
+    why_this_score: string
+    how_to_improve: string
   }>
   average_score: number
   label: string
@@ -87,9 +90,12 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({ report, view, isCached = 
         }
 
         // Criteria lines
-        const criteriaLines = pageData.criteria.map(
-          c => `• **${c.criterion}:** ${c.finding} (Score: ${c.score})`
-        )
+        const criteriaLines = pageData.criteria.map(c =>
+          `• **${c.criterion}:** ${c.finding} (Score: ${c.score})\n` +
+          `    – *Why it matters:* ${c.why_it_matters}\n` +
+          `    – *Why this score:* ${c.why_this_score}\n` +
+          `    – *How to improve:* ${c.how_to_improve}`
+        );
 
         // Average score line
         const avgLine =
