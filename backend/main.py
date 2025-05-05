@@ -1,35 +1,39 @@
+# ─── 1. Standard library ───────────────────────────────────────────────────────
+import logging, time, os
 from typing import Dict
+
+# ─── 2. Third-party libraries ─────────────────────────────────────────────────
+from dotenv import load_dotenv
+
+from fastapi.responses import JSONResponse
+from fastapi import Request
 from fastapi import Depends, FastAPI, BackgroundTasks, Request
+
+import jwt
+
+# ─── 3. Application modules ───────────────────────────────────────────────────
+from backend.security import configure_security_and_rate_limit
+from logging_config import setup_logging
+
 from backend.exception_handlers import register_exception_handlers
 from backend.schemas import UrlRequest, UrlResponse
 from backend.gpt_service import ChatGPTService
 from backend.email_service import send_verification_email, generate_jwt_token,decode_jwt_token, send_report_to_user
-from dotenv import load_dotenv
 from backend.screenshot_service import run_screenshot_subprocess
-from logging_config import setup_logging
 from backend.utils.helper import normalize_url, is_mobile
 from backend.redis.cache_instance import cache as run_cache
-from fastapi.middleware.cors import CORSMiddleware
-import logging
-import jwt
-import time
 
-# ─── Initialization ───────────────────────────────────────────────────────────
+# ─── Bootstrap ───────────────────────────────────────────────────────────
+load_dotenv()
 
 setup_logging()
 logger = logging.getLogger(__name__)
-load_dotenv()
 
 app = FastAPI()
 register_exception_handlers(app)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Apply security & rate-limit setup and grab limiter + limits
+limiter, BURST_LIMIT, DAILY_LIMIT = configure_security_and_rate_limit(app)
 
 # ─── Dependencies ──────────────────────────────────────────────────────────────
 
@@ -50,6 +54,7 @@ def root() -> Dict[str, str]:
 # ─── Analyze URL Endpoint ─────────────────────────────────────────────────────
 
 @app.post("/analyze-url", response_model=UrlResponse)
+@limiter.limit(f"{BURST_LIMIT};{DAILY_LIMIT}")
 async def analyze_url(
     request: Request,
     payload: UrlRequest,
@@ -99,11 +104,19 @@ async def analyze_url(
     elapsed = time.time() - start
     logger.info("analyze-url processed in %.3f seconds", elapsed)
 
-    return UrlResponse(
-        output=report,
-        screenshot_base64=screenshot,
-        is_cached=is_cached,
+    # final response + HttpOnly Secure cookie
+    resp = JSONResponse(
+        content=UrlResponse
+        (output=report, screenshot_base64=screenshot, is_cached=is_cached).model_dump()
     )
+    resp.set_cookie(
+        "access_token",
+        token,
+        httponly=True,
+        secure=(os.getenv("ENVIRONMENT") == "production"),
+        samesite="lax"
+    )
+    return resp
 
 
 # ─── Email Verification Endpoint ───────────────────────────────────────────────

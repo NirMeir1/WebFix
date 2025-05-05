@@ -3,7 +3,6 @@ __pycache__/
 *.py[cod]
 venv/
 venv310/
-.env
 .pytest_cache/
 *.egg-info/
 build/
@@ -11,6 +10,11 @@ dist/
 .mypy_cache/
 .coverage
 htmlcov/
+
+# Ignore all dotenv files…
+.env*
+# …except our example/template
+!.env.example
 
 # Node/Frontend
 frontend/node_modules/

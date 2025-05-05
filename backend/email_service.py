@@ -5,10 +5,7 @@ import logging
 from botocore.exceptions import ClientError
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from dotenv import load_dotenv
 from typing import Dict
-
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 
