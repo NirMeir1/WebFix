@@ -1,10 +1,11 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 # ─── 1. Standard library ───────────────────────────────────────────────────────
 import logging, time, os
 from typing import Dict
 
 # ─── 2. Third-party libraries ─────────────────────────────────────────────────
-from dotenv import load_dotenv
-
 from fastapi.responses import JSONResponse
 from fastapi import Request
 from fastapi import Depends, FastAPI, BackgroundTasks, Request
@@ -24,8 +25,6 @@ from backend.utils.helper import normalize_url, is_mobile
 from backend.redis.cache_instance import cache as run_cache
 
 # ─── Bootstrap ───────────────────────────────────────────────────────────
-load_dotenv()
-
 setup_logging()
 logger = logging.getLogger(__name__)
 
@@ -59,12 +58,12 @@ async def analyze_url(
     request: Request,
     payload: UrlRequest,
     background_tasks: BackgroundTasks,
-    chat_service: ChatGPTService = Depends(get_chat_service),
-    cache = Depends(get_cache),
 ) -> UrlResponse:
-    start = time.time()
     logger.info("Received analyze-url request for %s (type=%s)",
                 payload.url, payload.report_type)
+    
+    client_ip = request.client.host
+    logger.debug("analyze_url called from %s", client_ip)
 
     # Normalize and reassign
     normalized_url = normalize_url(payload.url)
@@ -80,60 +79,32 @@ async def analyze_url(
     # before deploying, Uncomment the following lines. 
     # test it again with ngrok before deploying.
 
-    # if payload.report_type == "deep":
-    #     background_tasks.add_task(send_verification_email,
-    #                               payload.email, token)
-    #     logger.info("Email verification initiated for %s", payload.email)
-    #     return UrlResponse(output="Email verification sent, Please verify to proceed.")
+    logger.debug("Email to be sent: %s", payload.email)
 
-
-    # Basic report path
-    is_cached, report = await cache.run(
-        url=normalized_url,
-        report_type=payload.report_type,
-        email=payload.email,
-        gpt_func=lambda: chat_service.generate_gpt_report(
-            normalized_url, payload.report_type
-        ),
+    background_tasks.add_task(send_verification_email, payload.email, token)
+    logger.info("Verification email initiated for %s", payload.email)
+    return UrlResponse(
+        output="Verification email sent. Please check your inbox to proceed.",
+        screenshot_base64=None,
+        is_cached=False
     )
-    logger.info("GPT report generated for %s", normalized_url)
-
-    ua = request.headers.get("User-Agent", "")
-    screenshot = None if is_mobile(ua) else run_screenshot_subprocess(normalized_url)
-
-    elapsed = time.time() - start
-    logger.info("analyze-url processed in %.3f seconds", elapsed)
-
-    # final response + HttpOnly Secure cookie
-    resp = JSONResponse(
-        content=UrlResponse
-        (output=report, screenshot_base64=screenshot, is_cached=is_cached).model_dump()
-    )
-    resp.set_cookie(
-        "access_token",
-        token,
-        httponly=True,
-        secure=(os.getenv("ENVIRONMENT") == "production"),
-        samesite="lax"
-    )
-    return resp
-
 
 # ─── Email Verification Endpoint ───────────────────────────────────────────────
 
 @app.get("/verify-email", response_model=Dict[str, str])
 async def verify_email(
+    request: Request,
     token: str,
-    background_tasks: BackgroundTasks,
     chat_service: ChatGPTService = Depends(get_chat_service),
     cache = Depends(get_cache),
-) -> Dict[str, str]:
+) -> JSONResponse:
+    start = time.time()
     decoded = decode_jwt_token(token)
-    email = decoded["email"]
     url = decoded["url"]
     report_type = decoded["report_type"]
+    email = decoded["email"]
 
-    logger.info("Email verified for %s; generating deep report", email)
+    logger.info("Email verified for %s; generating %s report", email, report_type)
 
     is_cached, report = await cache.run(
         url=url,
@@ -144,5 +115,26 @@ async def verify_email(
         ),
     )
 
-    background_tasks.add_task(send_report_to_user, email, report)
-    return {"message": "Email verified successfully. Report will be sent shortly."}
+    logger.info("GPT report generated for %s", url)
+
+    ua = request.headers.get("User-Agent", "")
+    screenshot = None if is_mobile(ua) else run_screenshot_subprocess(url)
+
+    elapsed = time.time() - start
+    logger.info("verify-email processed in %.3f seconds", elapsed)
+
+    resp = JSONResponse(
+        content=UrlResponse(
+            output=report,
+            screenshot_base64=screenshot,
+            is_cached=is_cached
+        ).model_dump()
+    )
+    resp.set_cookie(
+        "access_token",
+        token,
+        httponly=True,
+        secure=(os.getenv("ENVIRONMENT") == "production"),
+        samesite="lax"
+    )
+    return resp

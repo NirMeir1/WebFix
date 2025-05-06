@@ -5,7 +5,7 @@ from email_validator import validate_email, EmailNotValidError
 class UrlRequest(BaseModel):
     url: HttpUrl
     report_type: Literal["basic", "deep"]  # Restricting to specific values using Literal
-    email: Optional[EmailStr] = None
+    email: EmailStr  # Required email field
 
     allowed_report_types: ClassVar[list[str]] = ["basic", "deep"]
 
@@ -28,12 +28,6 @@ class UrlRequest(BaseModel):
             except EmailNotValidError as e:
                 raise ValueError(f"Invalid email: {e}")
 
-        # Uncomment the following lines if you want to enforce email for deep report
-        
-         # ✅ Enforce required email for deep report
-        # if report_type == 'deep' and not email:
-        #     raise ValueError("Email is required for a deep report.")
-        
         return values
 
 class UrlResponse(BaseModel):

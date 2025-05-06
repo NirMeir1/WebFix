@@ -61,7 +61,7 @@ class ChatGPTService:
         template: str,
         url: str,
         report_type: str,
-        email: Optional[str],
+        email: str,
     ) -> str:
         prompt = template.replace("{url}", url)\
             .replace("{report_type}", report_type) 
@@ -148,7 +148,7 @@ class ChatGPTService:
         self,
         url: str,
         report_type: str,
-        email: Optional[str] = None,
+        email: str,
     ) -> Dict[str, Any]:
         logger.info("Generating CRO report for URL: %s", url)
         template      = await self._load_template(report_type)
@@ -161,7 +161,7 @@ class ChatGPTService:
         self,
         url: str,
         report_type: str,
-        email: Optional[str] = None,
+        email: str, 
     ) -> str:
         data = await self.generate_response(url, report_type, email)
         # Return as compact JSON string

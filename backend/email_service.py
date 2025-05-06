@@ -19,7 +19,7 @@ ses_client = boto3.client(
 
 JWT_SECRET = os.getenv("JWT_SECRET_KEY")
 JWT_ALGORITHM = "HS256"
-FRONTEND_VERIFY_URL = "https://355a-2a00-a040-1a3-aaa3-d991-de87-4dd2-ba77.ngrok-free.app/verify-email"
+FRONTEND_VERIFY_URL = "https://a5d5-2a00-a041-e653-9e00-1de8-3d5c-e2ee-91d9.ngrok-free.app/verify-email"
 
 # Create JWT token
 def generate_jwt_token(data: Dict) -> str:
