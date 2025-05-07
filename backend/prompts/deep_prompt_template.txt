@@ -24,6 +24,8 @@ The user has supplied this live URL: {url}. Use only the site's current public c
     • why_this_score – why you awarded that numeric score (1-2 sentences).
     • how_to_improve – one concise, actionable fix (1-2 sentences).
 
+**Ensure your analysis and JSON output explicitly cover every numbered criterion under each SECTION—none may be omitted.**
+
 
 [Task]
 1. Load the URL in a desktop browser viewport and evaluate **every** listed criterion for that section.
@@ -67,14 +69,17 @@ SECTION: General
 
 
 3. Check clickable elements for clear visual distinction.
- Ensure buttons and links have distinct styling and hover/focus states to signal interactivity.
+ Ensure buttons and links have distinct styling and hover/focus states to signal 
+ interactivity.Make sure that anything the user can click 
+ (like buttons, links, add to cart, wishlist icons, product images, etc.) 
+ looks obviously clickable and Check that links and buttons are easy to find
 
 
 4. Ensure cookie bars can be dismissed within 2 seconds.
  Confirm consent banners include a visible close control and disappear promptly upon click.
 
 
-5. Verify wishlist functionality for checkout.
+5. Verify that wishlist functionality properly supports checkout
  Test that saved items can be added to the cart during checkout without errors.
 
 
@@ -87,7 +92,10 @@ SECTION: General
 
 
 8. Check proper spacing between actionable elements.
- Validate sufficient margin between buttons and links to prevent accidental clicks.
+ Validate sufficient margin between buttons and links to prevent accidental 
+ clicks..Look at buttons, links, icons, or anything you can click or tap 
+ (especially on mobile) Make sure there is enough space between them so users 
+ don’t accidentally click the wrong thing
 
 
 9. Identify upsell opportunities at checkout.
@@ -95,23 +103,37 @@ SECTION: General
 
 
 10. Ensure logo consistency and correct redirection.
- Verify the logo appears uniformly across pages and always links back to the homepage.
+ Verify the logo appears uniformly across pages and always links back to the homepage,
+ also check if Logo size might be too small, Low contrast against the background,
+ Poor positioning or clutter, on mobile see if logo is too close to the hamburger menu..
 
 
 11. Evaluate use of micro‑animations on main CTA.
  Assess animations to confirm they draw attention without hindering performance.
+ Look at the main Call to Action (CTA) on the page — the most important button 
+ (like "Add to Cart," "Buy Now," "Start Free Trial").Check if there are small 
+ animations ("micro-animations") that help attract attention to the CTA or enhance 
+ the feeling of interaction, Then judge if those animations are:Helping the user, 
+ Distracting or Missing
 
 
 12. Assess timing and intrusion level of pop‑ups.
  Check that any modal or pop‑up appears at appropriate times and is easily dismissed.
+ if their are no pop-up or any modal, just explain when and why it is good to use 
+ them for better converting
 
 
-13. Verify homepage promotion of offers (e.g., free shipping).
+
+13. Check if the homepage clearly shows special offers, deals, or benefits(e.g., free shipping).
  Ensure key promotions are highlighted prominently on the homepage above the fold.
+ Make sure they are visible and noticeable to users when they first land on the 
+ homepage — without needing to scroll much or search for them.
 
 
 14. Check prominence and effectiveness of top‑bar offers.
- Confirm banners or bars at the top of each page are visible and communicate value clearly.
+Look at the very top strip of the website — the top-bar 
+(also called "announcement bar" or "promo bar").Check if the offer shown there 
+is Visible and noticeable enough (prominence),Clear and motivating (effectiveness).
 
 
 SECTION: Navigation

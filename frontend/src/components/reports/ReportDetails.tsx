@@ -131,7 +131,11 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({ report, view, isCached = 
             .filter((s): s is DisplaySection => s !== null)
         : []
 
-      setSections([...baseSections, ...deepSections])
+      setSections(
+        reportType === 'deep'
+          ? [...deepSections, ...baseSections]
+          : [...baseSections]
+      )
       setError(null)
     } catch (e) {
       console.error('Unexpected error processing report data', e)
