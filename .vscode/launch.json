@@ -1,27 +1,42 @@
 {
-    "version": "0.2.0",
-    "compounds": [
-      {
-        "name": "Debug FastAPI",
-        "configurations": ["Run FastAPI"]
-      }
-    ],
-    "configurations": [
-      
-      {
-        "name": "Run FastAPI",
-        "type": "debugpy",
-        "request": "launch",
-        "module": "uvicorn",
-        "args": [
-          "backend.main:app",
-          "--reload"
-        ],
-        "justMyCode": false,
-        "python": "${workspaceFolder}/backend/venv310/Scripts/python.exe",
-        "env": {
-          "PYTHONPATH": "${workspaceFolder}/backend"
-        }
-      }
-    ]
-  }
+  "version": "0.2.0",
+  "compounds": [
+    {
+      "name": "Debug FastAPI (Dev)",
+      "configurations": ["Run FastAPI (Dev)"]
+    }
+  ],
+  "configurations": [
+    {
+      "name": "Run FastAPI (Dev)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "backend.main:app",
+        "--reload"
+      ],
+      "justMyCode": false,
+      "python": "${workspaceFolder}/backend/venv310/Scripts/python.exe",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/backend"
+      },
+      "envFile": "${workspaceFolder}/.env.development"
+    },
+    {
+      "name": "Run FastAPI (Prod)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "backend.main:app"
+      ],
+      "justMyCode": false,
+      "python": "${workspaceFolder}/backend/venv310/Scripts/python.exe",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/backend"
+      },
+      "envFile": "${workspaceFolder}/.env.production"
+    }
+  ]
+}

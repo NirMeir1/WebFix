@@ -24,6 +24,8 @@ The user has supplied this live URL: {url}. Use only the site's current public c
     • why_this_score – why you awarded that numeric score (1-2 sentences).
     • how_to_improve – one concise, actionable fix (1-2 sentences).
 
+**Ensure your analysis and JSON output explicitly cover every numbered criterion under each SECTION—none may be omitted.**
+
 
 [Task]
 1. Load the URL in a desktop browser viewport and evaluate **every** listed criterion for that section.
@@ -34,481 +36,524 @@ The user has supplied this live URL: {url}. Use only the site's current public c
    - `label`: one of `"Excellent"`, `"Good"`, `"Can Be Improved"`, `"Bad"`, based on the average score.
    - `recommendations`: an array of **three or more** actionable, specific suggestions.
 
-4. For each of the following sections—exactly in this order—evaluate **all** criteria as listed under each heading:
+
+4. For each criterion, provide a detailed analysis addressing the following points:
+  Importance: Explain why this specific criterion is critical for improving conversions on the site.
+  Score Justification: Clearly justify the score assigned. If the score is less than the maximum, explain in depth what deficiencies or issues prevented achieving a perfect score.
+  Maximum Score Note: If the criterion achieved the maximum score, write: "Well done, keep it up."
+  Recommendations for Improvement: If the score is not maximum, provide clear, actionable recommendations on how to improve this specific criterion on the site in order to raise the score and enhance conversion performance.
+  The goal is to ensure that even non-expert site owners can understand the analysis, recognize the impact on conversions, and know exactly what actions to take to improve
+
+
+5. When evaluating each criterion, apply strict and demanding standards. 
+  Do not assign high scores lightly: only award a maximum score if the criterion is fully optimized 
+  with no significant flaws or potential improvements. Be highly critical in your analysis, 
+  ensuring that every aspect has been carefully reviewed from both a UX and conversion perspective. 
+  The goal is to identify all opportunities for improvement, 
+  even when the current implementation seems acceptable
+
+
+6. For each section—General, Navigation, Search, Cart Widget, Home Page, Category Page, Product Page, Cart Page,
+  Checkout Page, and Footer—provide separate analyses for Desktop and Mobile. On Desktop and then on Mobile, 
+  evaluate exactly these criteria:
+
 
 SECTION: General
 
-Check how long it takes for the site to load (≤ 3 sec).
+1. Check how long it takes for the site to load (≤ 3 sec)
  Measure end‑to‑end load time with performance tools to ensure content is visible within three seconds.
 
 
-Confirm clear CTAs on all pages (404, empty results, blog, about).
+2. Confirm clear CTAs on all pages (404, empty results, blog, about)
  Verify every page provides prominent, action‑oriented buttons guiding users toward next steps.
 
 
-Check clickable elements for clear visual distinction.
- Ensure buttons and links have distinct styling and hover/focus states to signal interactivity.
+3. Check clickable elements for clear visual distinction
+ Ensure buttons and links have distinct styling and hover/focus states to signal 
+ interactivity.Make sure that anything the user can click 
+ (like buttons, links, add to cart, wishlist icons, product images, etc.) 
+ looks obviously clickable and Check that links and buttons are easy to find
 
 
-Ensure cookie bars can be dismissed within 2 seconds.
+4. Ensure cookie bars can be dismissed within 2 seconds
  Confirm consent banners include a visible close control and disappear promptly upon click.
 
 
-Verify wishlist functionality for checkout.
+5. Verify that wishlist functionality properly supports checkout
  Test that saved items can be added to the cart during checkout without errors.
 
 
-Confirm button/link labels start with actionable verbs.
+6. Confirm button/link labels start with actionable verbs
  Check that labels use verbs like “Buy,” “Read,” or “Subscribe” to set clear expectations.
 
 
-Ensure non‑clickable elements are not misleading.
+7. Ensure non‑clickable elements are not misleading
  Make sure static text or images don’t use hover or cursor styles indicating interactivity.
 
 
-Check proper spacing between actionable elements.
- Validate sufficient margin between buttons and links to prevent accidental clicks.
+8. Check proper spacing between actionable elements
+ Validate sufficient margin between buttons and links to prevent accidental 
+ clicks..Look at buttons, links, icons, or anything you can click or tap 
+ (especially on mobile) Make sure there is enough space between them so users 
+ don’t accidentally click the wrong thing
 
 
-Identify upsell opportunities at checkout.
+9. Identify upsell opportunities at checkout
  Look for logical cross‑sell or upsell placements to boost average order value.
 
 
-Ensure logo consistency and correct redirection.
- Verify the logo appears uniformly across pages and always links back to the homepage.
+10. Ensure logo consistency and correct redirection
+ Verify the logo appears uniformly across pages and always links back to the homepage,
+ also check if Logo size might be too small, Low contrast against the background,
+ Poor positioning or clutter, on mobile see if logo is too close to the hamburger menu.
 
 
-Evaluate use of micro‑animations on main CTA.
+11. Evaluate use of micro‑animations on main CTA
  Assess animations to confirm they draw attention without hindering performance.
+ Look at the main Call to Action (CTA) on the page — the most important button 
+ (like "Add to Cart," "Buy Now," "Start Free Trial").Check if there are small 
+ animations ("micro-animations") that help attract attention to the CTA or enhance 
+ the feeling of interaction, Then judge if those animations are:Helping the user, 
+ Distracting or Missing
 
 
-Assess timing and intrusion level of pop‑ups.
+12. Assess timing and intrusion level of pop‑ups
  Check that any modal or pop‑up appears at appropriate times and is easily dismissed.
+ if their are no pop-up or any modal, just explain when and why it is good to use 
+ them for better converting
 
 
-Verify homepage promotion of offers (e.g., free shipping).
+
+13. Check if the homepage clearly shows special offers, deals, or benefits(e.g., free shipping)
  Ensure key promotions are highlighted prominently on the homepage above the fold.
+ Make sure they are visible and noticeable to users when they first land on the 
+ homepage — without needing to scroll much or search for them.
 
 
-Check prominence and effectiveness of top‑bar offers.
- Confirm banners or bars at the top of each page are visible and communicate value clearly.
+14. Check prominence and effectiveness of top‑bar offers
+Look at the very top strip of the website — the top-bar 
+(also called "announcement bar" or "promo bar").Check if the offer shown there 
+is Visible and noticeable enough (prominence),Clear and motivating (effectiveness).
 
 
 SECTION: Navigation
 
-Ensure broad, shallow navigation for ease of use.
+1. Ensure broad, shallow navigation for ease of use
  Check that menu depth is limited to avoid overwhelming users.
 
 
-Confirm clear indicators for active navigation states.
+2. Confirm clear indicators for active navigation states
  Verify current page links are visually distinguished in the menu.
 
 
-Evaluate descriptive clarity of category labels.
+3. Evaluate descriptive clarity of category labels
  Ensure navigation labels accurately describe their destination content.
 
 
-Verify logical ordering of navigation items.
+4. Verify logical ordering of navigation items
  Confirm the sequence of links matches user expectations and common usage.
 
 
-Identify and suggest removal of unnecessary links.
+5. Identify and suggest removal of unnecessary links
  Recommend pruning rarely used or redundant links to declutter menus.
 
 
-Confirm sticky navigation for essential elements.
+6. Confirm sticky navigation for essential elements
  Test that main menus remain accessible during scrolling.
 
 
 SECTION: Search
 
-Verify prominence and usability of the search box.
+1. Verify prominence and usability of the search box
  Ensure the search field is easily found and clearly labeled.
 
 
-Evaluate auto‑complete and auto‑suggest effectiveness.
+2. Evaluate auto‑complete and auto‑suggest effectiveness
  Test that suggestions update as the user types relevant terms.
 
 
-Confirm search includes categories and products.
+3. Confirm search includes categories and products
  Check that results surface both category pages and individual items.
 
 
-Ensure results page clarity and editability of queries.
+4. Ensure results page clarity and editability of queries
  Verify users can refine or correct their search terms directly on the results page.
 
 
-Evaluate relevance‑based ranking of results.
+5. Evaluate relevance‑based ranking of results
  Assess whether top results match common user intents.
 
 
-Check presence of guidance for no‑result searches.
+6. Check presence of guidance for no‑result searches
  Confirm helpful messages and suggestions appear when no matches are found.
 
 
-Verify results for popular searches.
+7. Verify results for popular searches
  Test common queries to ensure the most relevant items are returned.
 
 
-Confirm examples of suggested queries displayed.
+8. Confirm examples of suggested queries displayed
  Ensure the interface shows sample searches to inspire user exploration.
 
 
-Assess support for long search queries.
+9. Assess support for long search queries
  Test that lengthy inputs return complete and accurate results.
 
 
-Check Enter key functionality for initiating search.
+10. Check Enter key functionality for initiating search
  Make sure pressing Enter submits the query consistently.
 
 
-Confirm usage of a magnifying glass icon.
+11. Confirm usage of a magnifying glass icon
  Verify the icon is present and signals the search function.
 
 
-Evaluate visibility of recent/trending searches.
- Ensure the UI surfaces user’s past queries and popular terms.
+12. Evaluate visibility of recent/trending searches
+ Ensure the UI surfaces user's past queries and popular terms.
 
 
-Verify support for spell check, plurals, and synonyms.
+13. Verify support for spell check, plurals, and synonyms
  Test variations of keywords to confirm intelligent handling.
 
 
 SECTION: Cart Widget
 
-Verify cart icon presence and consistency across pages.
+1. Verify cart icon presence and consistency across pages
  Confirm the cart indicator appears in the same location throughout the site.
 
 
-Confirm mini cart displays pricing, discounts, and items.
+2. Confirm mini cart displays pricing, discounts, and items
  Ensure hovering or clicking the icon reveals accurate order details.
 
 
-Evaluate free shipping progress bar visibility.
+3. Evaluate free shipping progress bar visibility
  Check that the bar clearly shows progress toward free shipping thresholds.
 
 
-Check checkout link functionality within the mini cart.
- Test that the “Checkout” button in the dropdown navigates correctly.
+4. Check checkout link functionality within the mini cart
+ Test that the "Checkout" button in the dropdown navigates correctly.
 
 
-Confirm empty cart state includes a clear CTA.
+5. Confirm empty cart state includes a clear CTA
  Verify that users see guidance on adding items when their cart is empty.
 
 
 SECTION: Home Page
 
-Clearly describe primary selling propositions.
- Verify headings or banners succinctly communicate the brand’s key benefits.
+1. Clearly describe primary selling propositions
+ Verify headings or banners succinctly communicate the brand's key benefits.
 
 
-Evaluate first impressions, urgency, and trust.
+2. Evaluate first impressions, urgency, and trust
  Assess whether design elements build credibility and prompt action.
 
 
-Check for professional, clean design.
+3. Check for professional, clean design
  Ensure consistent typography, spacing, and alignment for a polished look.
 
 
-Ensure immediate visibility of main products.
+4. Ensure immediate visibility of main products
  Verify top-selling items appear above the fold without scrolling.
 
 
-Evaluate visual hierarchy and value propositions.
+5. Evaluate visual hierarchy and value propositions
  Confirm the most important messages stand out through size and placement.
 
 
-Confirm usage of high-quality graphics.
+6. Confirm usage of high-quality graphics
  Check images are sharp, load quickly, and represent products accurately.
 
 
-Verify clarity of above-the-fold CTA.
+7. Verify clarity of above-the-fold CTA
  Test that the primary button is visible on page load without scrolling.
 
 
-Check deals and urgency messages prominence.
+8. Check deals and urgency messages prominence
  Ensure flash sales or countdowns are highlighted to drive conversions.
 
 
-Evaluate visibility of key shopping benefits.
- Confirm messages like “Free Shipping” or “24/7 Support” are easily seen.
+9. Evaluate visibility of key shopping benefits
+ Confirm messages like "Free Shipping" or "24/7 Support" are easily seen.
 
 
-Confirm prioritization of important categories.
+10. Confirm prioritization of important categories
  Verify that high-value product categories are featured prominently.
 
 
-Ensure special category pages availability.
+11. Ensure special category pages availability
  Check for landing pages dedicated to promotions, new arrivals, or seasonal items.
 
 
-Check curated key product listings.
+12. Check curated key product listings
  Ensure featured products or best sellers are displayed in a distinct section.
 
 
-Confirm availability of contact options (WhatsApp, Live Chat, Phone).
+13. Confirm availability of contact options (WhatsApp, Live Chat, Phone)
  Verify support channels are clearly presented and operational.
 
 
-Check visibility of dynamic customer support icons.
+14. Check visibility of dynamic customer support icons
  Ensure floating or hover-triggered contact icons remain accessible at all times.
 
 
-Evaluate visibility of recently viewed items.
+15. Evaluate visibility of recently viewed items
  Confirm the UI shows past products to encourage return visits.
 
 
-Check inclusion of the founder’s story, mission, and vision.
- Verify an “About” section shares the brand narrative for authenticity.
+16. Check inclusion of the founder's story, mission, and vision
+ Verify an "About" section shares the brand narrative for authenticity.
 
 
 SECTION: Category Page
 
-Evaluate sorting options by price, popularity, and new arrivals.
+1. Evaluate sorting options by price, popularity, and new arrivals
  Test that all relevant filters appear and update results correctly.
 
 
-Verify prominence and usability of sorting features.
+2. Verify prominence and usability of sorting features
  Ensure dropdowns or buttons are labeled and easy to operate.
 
 
-Check clarity of category/subcategory names.
+3. Check clarity of category/subcategory names
  Confirm labels accurately reflect the products contained within.
 
 
-Evaluate availability of grid/list view.
+4. Evaluate availability of grid/list view
  Test toggle functionality and consistent layouts in both modes.
 
 
-Confirm product count visibility.
+5. Confirm product count visibility
  Ensure the total number of items is displayed clearly.
 
 
-Check SEO‑friendly category descriptions.
+6. Check SEO‑friendly category descriptions
  Verify descriptive text includes target keywords without fluff.
 
 
-Ensure scroll position persistence for returning users.
+7. Ensure scroll position persistence for returning users
  Confirm that navigating back retains the user’s place on long lists.
 
 
 SECTION: Product Page
 
-Confirm sticky navigation of product details (name, price, CTA).
+1. Confirm sticky navigation of product details (name, price, CTA)
  Verify these elements remain visible when scrolling for easy purchase.
 
 
-Check availability of product inquiry contact options.
+2. Check availability of product inquiry contact options
  Ensure dynamic or floating support icons are accessible throughout the page.
 
 
-Ensure breadcrumb navigation clarity.
+3. Ensure breadcrumb navigation clarity
  Confirm the path back to higher-level categories is clear and click‑able.
 
 
-Evaluate “Notify me” for out‑of‑stock items.
+4. Evaluate “Notify me” for out‑of‑stock items
  Test sign‑up workflows and confirm notification emails send properly.
 
 
-Check proper back‑button functionality.
+5. Check proper back‑button functionality
  Ensure the browser back button returns to the previous category or search.
 
 
-Verify descriptive, SEO‑friendly titles.
+6. Verify descriptive, SEO‑friendly titles
  Confirm product names include relevant keywords and are concise.
 
 
-Confirm strong selling words in subtitles.
+7. Confirm strong selling words in subtitles
  Check descriptors like “Premium,” “Exclusive,” or “Best Seller” are used effectively.
 
 
-Evaluate star ratings and reviews visibility.
+8. Evaluate star ratings and reviews visibility
  Ensure user feedback is prominent and legible near the product title.
 
 
-Check clear presentation of key product benefits.
+9. Check clear presentation of key product benefits
  Verify bullet points or icons highlight unique selling points.
 
 
-Confirm high‑quality, zoom‑enabled product images.
+10. Confirm high‑quality, zoom‑enabled product images
  Test image clarity and zoom functionality across devices.
 
 
-Evaluate multiple images/thumbnails and video availability.
+11. Evaluate multiple images/thumbnails and video availability
  Ensure a media gallery supports both images and product videos.
 
 
-Verify swipe‑enabled mobile gallery functionality.
+12. Verify swipe‑enabled mobile gallery functionality
  Test touch gestures for image browsing on mobile devices.
 
 
-Ensure variant images update dynamically.
+13. Ensure variant images update dynamically
  Confirm selecting a color or size changes the displayed image.
 
 
-Confirm prominence of Add‑to‑Cart CTA.
+14. Confirm prominence of Add‑to‑Cart CTA
  Verify the button stands out in both desktop and mobile views.
 
 
-Check availability of size charts.
+15. Check availability of size charts
  Ensure measurement guides are accessible and accurate.
 
 
-Verify use of localized measurement units.
+16. Verify use of localized measurement units
  Confirm dimensions and weights adjust based on user locale.
 
 
-Ensure inline quantity selectors update pricing instantly.
+17. Ensure inline quantity selectors update pricing instantly
  Test that changing quantity refreshes totals without page reload.
 
 
-Evaluate clarity of pricing and discounts.
+18. Evaluate clarity of pricing and discounts
  Ensure sale prices and original prices are labeled clearly.
 
 
-Check visibility of shipping and delivery information.
+19. Check visibility of shipping and delivery information
  Verify estimated dates or costs are shown near the price.
 
 
-Confirm clear stock availability status.
+20. Confirm clear stock availability status
  Ensure “In Stock,” “Low Stock,” or “Out of Stock” labels are obvious.
 
 
-Evaluate express and installment payment options.
+21. Evaluate express and installment payment options
  Check for alternate checkout payment methods and their details.
 
 
-Verify product comparison availability.
+22. Verify product comparison availability
  Test that users can select items for side‑by‑side feature comparison.
 
 
 SECTION: Cart Page
 
-Evaluate clean, uncluttered design.
+1. Evaluate clean, uncluttered design
  Confirm layout focuses on products and key actions without distractions.
 
 
-Confirm urgency triggers (e.g., reservation timers).
+2. Confirm urgency triggers (e.g., reservation timers)
  Check elements like countdowns or limited‑stock warnings appear.
 
 
-Check free shipping progress bar visibility.
+3. Check free shipping progress bar visibility
  Ensure the bar updates based on cart total and is easy to spot.
 
 
-Verify cart persistence on return visits.
+4. Verify cart persistence on return visits
  Test that items remain in the cart after navigating away.
 
 
-Ensure clear key product information.
+5. Ensure clear key product information
  Verify titles, variants, and images match user selections.
 
 
-Confirm accuracy of variant images.
+6. Confirm accuracy of variant images
  Test that images reflect chosen options (color, size).
 
 
-Evaluate quantity edit functionality.
+7. Evaluate quantity edit functionality
  Ensure users can adjust item counts directly in the cart.
 
 
-Verify easy item removal capability.
+8. Verify easy item removal capability
  Confirm “Remove” links or icons work without errors.
 
 
-Check visibility of estimated delivery dates.
+9. Check visibility of estimated delivery dates
  Ensure shipping timelines appear clearly for each product.
 
 
-Confirm visibility of scarcity warnings.
+10. Confirm visibility of scarcity warnings
  Verify messages like “Only 2 left” are prominent to drive urgency.
 
 
-Evaluate accessibility of contact/return info.
+11. Evaluate accessibility of contact/return info
  Ensure support links and return policies are reachable from the cart.
 
 
-Check the hidden coupon code field.
+12. Check the hidden coupon code field
  Test that discount code inputs can be revealed and applied correctly.
 
 
-Verify upsell and urgency discount visibility.
+13. Verify upsell and urgency discount visibility
  Confirm cross‑sell suggestions and time‑sensitive offers display near totals.
 
 
-Confirm availability of a “Save for later” option.
+14. Confirm availability of a “Save for later” option
  Ensure users can move items out of their cart for future purchase.
 
 
 SECTION: Checkout Page
 
-Confirm availability of guest checkout.
+1. Confirm availability of guest checkout
  Verify users can complete purchases without creating an account.
 
 
-Evaluate clarity of step‑by‑step progress indicators.
+2. Evaluate clarity of step‑by‑step progress indicators
  Ensure each checkout stage is labeled and highlights the current step.
 
 
-Verify clarity of detailed order summary before purchase.
+3. Verify clarity of detailed order summary before purchase
  Confirm full breakdown of items, costs, and shipping in one section.
 
 
-Check minimal form field usage.
+4. Check minimal form field usage
  Ensure only essential information is requested to reduce friction.
 
 
-Evaluate absence of distractions.
+5. Evaluate absence of distractions
  Confirm sidebars or external links are hidden during checkout.
 
 
-Ensure easy access to the privacy policy.
+6. Ensure easy access to the privacy policy
  Verify a link to data protection details is visible near submit controls.
 
 
-Confirm availability of checkout support.
+7. Confirm availability of checkout support
  Test that help options appear if users encounter issues mid‑checkout.
 
 
-Evaluate clarity of floating labels and inline validation.
+8. Evaluate clarity of floating labels and inline validation
  Ensure form fields use clear placeholder transitions and immediate error messages.
 
 
-Check saved data functionality for returning users.
+9. Check saved data functionality for returning users
  Verify previously entered addresses or payment details auto‑populate securely.
 
 
 SECTION: Footer
 
-Confirm visibility of store benefits (shipping, returns, contact info).
+1. Confirm visibility of store benefits (shipping, returns, contact info)
  Ensure these perks are listed and legible in the footer area.
 
 
-Check availability of a “Back to top” link.
+2. Check availability of a “Back to top” link
  Verify smooth scroll functionality and prominence of the control.
 
 
-Verify business details transparency.
+3. Verify business details transparency
  Confirm company registration, address, and policy links are accessible.
 
 
-Ensure easy access to return and privacy policies.
+4. Ensure easy access to return and privacy policies
  Test that legal information is clearly linked in the footer.
 
 
-Check trust badges/icons visibility.
+5. Check trust badges/icons visibility
  Verify payment, security, and trust seals are displayed prominently.
 
 
-Evaluate social link visibility and follower count.
+6. Evaluate social link visibility and follower count
  Ensure social media icons and metrics are present and updated.
 
 
-Confirm inclusion of main category links.
+7. Confirm inclusion of main category links
  Test for quick access to top‑level product categories from the footer.
 
 
-5. **After** evaluating all criteria under each section, include **at least three** actionable, specific recommendations in the `recommendations` array to improve scores and user experience.
+-----
+
+
+**After** evaluating all criteria under each section, include **at least three** actionable, specific recommendations in the `recommendations` array to improve scores and user experience.
 
 
 [Format]
