@@ -11,14 +11,20 @@ dist/
 .coverage
 htmlcov/
 
+# Backend build artifacts
+backend/package/
+backend/function.zip
+
 # Ignore all dotenv files…
 .env*
 # …except our example/template
 !.env.example
 
 # Node/Frontend
-frontend/node_modules/
+node_modules/
 frontend/dist/
+amplify/.build/
+build/
 *.log
 
 # System
