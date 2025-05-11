@@ -30,7 +30,7 @@ const App: React.FC = () => {
 
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000')
+    axios.get('https://ghxfymbv44.execute-api.eu-north-1.amazonaws.com/prod')
       .then(res => {
         if (res.data?.message) {
           setMessage(res.data.message);
@@ -62,7 +62,7 @@ const App: React.FC = () => {
     setShowReport(false);  // Reset report display
 
     try {
-      const res = await axios.post('http://127.0.0.1:8000/analyze-url', {
+      const res = await axios.post('https://ghxfymbv44.execute-api.eu-north-1.amazonaws.com/prod/analyze-url', {
         url,
         ...(email && { email }),
         report_type: reportType,
