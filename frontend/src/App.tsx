@@ -30,7 +30,7 @@ const App: React.FC = () => {
 
 
   useEffect(() => {
-    axios.get('https://ghxfymbv44.execute-api.eu-north-1.amazonaws.com/prod')
+    axios.get('https://ghxfymbv44.execute-api.eu-north-1.amazonaws.com')
       .then(res => {
         if (res.data?.message) {
           setMessage(res.data.message);
@@ -62,7 +62,7 @@ const App: React.FC = () => {
     setShowReport(false);  // Reset report display
 
     try {
-      const res = await axios.post('https://ghxfymbv44.execute-api.eu-north-1.amazonaws.com/prod/analyze-url', {
+      const res = await axios.post('https://ghxfymbv44.execute-api.eu-north-1.amazonaws.com/analyze-url', {
         url,
         ...(email && { email }),
         report_type: reportType,
