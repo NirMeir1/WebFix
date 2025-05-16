@@ -1,8 +1,9 @@
-# Python
+# ─── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 venv/
 venv310/
+venv-linux/
 .pytest_cache/
 *.egg-info/
 build/
@@ -11,21 +12,24 @@ dist/
 .coverage
 htmlcov/
 
-# Backend build artifacts
+# ─── Lambda Build Artifacts ────────────────────────────────────────────────────
+lambda_package/
+lambda-deploy.zip
+
+# ─── Backend ───────────────────────────────────────────────────────────────────
 backend/package/
 backend/function.zip
 
-# Ignore all dotenv files…
+# ─── Dotenv Files ──────────────────────────────────────────────────────────────
 .env*
-# …except our example/template
 !.env.example
 
-# Node/Frontend
+# ─── Node/Frontend ─────────────────────────────────────────────────────────────
 node_modules/
 frontend/dist/
 amplify/.build/
 build/
 *.log
 
-# System
+# ─── System ────────────────────────────────────────────────────────────────────
 .DS_Store
