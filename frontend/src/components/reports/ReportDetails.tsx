@@ -10,6 +10,10 @@ interface PageViewData {
     why_this_score: string
     how_to_improve: string
     priority: 'High' | 'Medium' | 'Low'
+    screenshot_url?: string
+    example_url?: string
+    impact?: string
+    task_ticket?: string
   }>
   average_score: number
   label: string
@@ -93,12 +97,19 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({ report, view, isCached = 
         }
 
         // Criteria lines
-        const criteriaLines = pageData.criteria.map(c =>
-          `• **${c.criterion}:** ${c.finding} (Score: ${c.score})\n` +
-          `    – *Why it matters:* ${c.why_it_matters}\n` +
-          `    – *Why this score:* ${c.why_this_score}\n` +
-          `    – *How to improve:* ${c.how_to_improve}`
-        );
+        const criteriaLines = pageData.criteria.map(c => {
+          const lines = [
+            `• **${c.criterion}:** ${c.finding} (Score: ${c.score})`,
+            `    – *Why it matters:* ${c.why_it_matters}`,
+            `    – *Why this score:* ${c.why_this_score}`,
+            `    – *How to improve:* ${c.how_to_improve}`,
+          ];
+          if (c.impact) lines.push(`    – *Impact:* ${c.impact}`);
+          if (c.example_url) lines.push(`    – *Example URL:* ${c.example_url}`);
+          if (c.screenshot_url) lines.push(`    – *Screenshot:* ${c.screenshot_url}`);
+          if (c.task_ticket) lines.push(`    – *Task:* ${c.task_ticket}`);
+          return lines.join('\n');
+        });
 
         // Average score line
         const avgLine =

@@ -40,13 +40,31 @@ const ReportItem: React.FC<ReportItemProps> = ({ title, content, score, colorCla
 
               return (
                 <div key={i}>
-                  {parts.map((part, index) =>
-                    part.startsWith('**') && part.endsWith('**') ? (
-                      <strong key={index}>{part.slice(2, -2)}</strong>
-                    ) : (
-                      <span key={index}>{part}</span>
-                    )
-                  )}
+                  {parts.map((part, index) => {
+                    if (part.startsWith('**') && part.endsWith('**')) {
+                      return <strong key={index}>{part.slice(2, -2)}</strong>;
+                    }
+                    const segments = part.split(/(https?:\/\/\S+)/g);
+                    return (
+                      <React.Fragment key={index}>
+                        {segments.map((seg, idx) =>
+                          /https?:\/\//.test(seg) ? (
+                            <a
+                              key={idx}
+                              href={seg}
+                              className="text-blue-600 underline"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {seg}
+                            </a>
+                          ) : (
+                            <span key={idx}>{seg}</span>
+                          )
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
                 </div>
               );
             })}

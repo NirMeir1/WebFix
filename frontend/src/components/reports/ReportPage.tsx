@@ -51,7 +51,7 @@ const ReportPage: React.FC<ReportPageProps> = ({ url, report, screenshot, isCach
             </a>
           </h2>
           <p className="mt-2 font-medium">Overall CRO Score: {report.overall_score}</p>
-          <p className="mb-4 text-gray-700">{report.overall_observations}</p>
+          <p className="mb-4 text-gray-700 text-base sm:text-lg">{report.overall_observations}</p>
 
           {topActions.length > 0 && (
             <div className="bg-blue-50 p-4 rounded-md mb-4">

@@ -12,7 +12,7 @@ The user has supplied this live URL: {url}. Use only the site's current public c
   1. `"schema_version"` – fixed value `"1.2"`.
   2. `"site"` – the exact `{url}` string.
   3. `"generated_at"` – a valid ISO 8601 timestamp.
-  4. `"overall_observations"` – a concise summary of key issues (max 500 characters).
+  4. `"overall_observations"` – a concise summary of key issues for {url} (max 500 characters).
   5. `"overall_score"` – overall CRO score as a number.
   6. `"pages"` – an object matching the schema.
   7. `"report_type"` – the literal string `"{report_type}"`.
@@ -32,7 +32,7 @@ The user has supplied this live URL: {url}. Use only the site's current public c
 1. Load the URL in a desktop browser viewport and evaluate **every** listed criterion for that section.
 2. Switch to a mobile-device emulation viewport (e.g., iPhone X, 375×812) and evaluate **every** listed criterion for that section.
 3. For each combination of section and device (Desktop/Mobile), populate:
-   - `criteria`: an array of objects `{criterion: string, finding: string, score: integer 2–5, why_it_matters: string, why_this_score: string, how_to_improve: string, priority: "High"|"Medium"|"Low"}` covering **all** criteria under that section’s `SECTION:` heading.
+   - `criteria`: an array of objects `{criterion: string, finding: string, score: integer 2–5, why_it_matters: string, why_this_score: string, how_to_improve: string, priority: "High"|"Medium"|"Low"}` covering **all** criteria under that section’s `SECTION:` heading. Include optional `screenshot_url`, `example_url`, `impact`, and `task_ticket` fields.
    - `average_score`: the numeric average of your scores (to one decimal place).
    - `label`: one of `"Excellent"`, `"Good"`, `"Can Be Improved"`, `"Bad"`, based on the average score.
    - `recommendations`: an array of prioritized actionable suggestions (1–2 for basic reports, all for deep).
@@ -572,8 +572,9 @@ against the provided schema without error.
   - `pages` (`home`, `category`, `product`, `cart`, `checkout`, `footer`),
   - `report_type` (string; one of `"basic"` or `"deep"`),
   - **each** page with `desktop` and `mobile` objects containing:
-    - `criteria`: array of `{ criterion, finding, score, why_it_matters, why_this_score, how_to_improve, priority }`
-    - `average_score`: number (2–5)  
+    - `criteria`: array of `{ criterion, finding, score, why_it_matters, why_this_score, how_to_improve, priority }`.
+      These objects may also include optional `screenshot_url`, `example_url`, `impact`, and `task_ticket` fields.
+    - `average_score`: number (2–5)
     - `label`: one of `"Excellent"`, `"Good"`, `"Can Be Improved"`, `"Bad"`  
     - `recommendations`: array of strings  
 - **No** extra properties or nesting allowed.  
