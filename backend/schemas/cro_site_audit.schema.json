@@ -5,6 +5,7 @@
     "site",
     "generated_at",
     "overall_observations",
+    "overall_score",
     "pages",
     "report_type"
   ],
@@ -20,6 +21,9 @@
     },
     "overall_observations": {
       "type": "string"
+    },
+    "overall_score": {
+      "type": "number"
     },
     "report_type": {
       "type": "string",
@@ -71,7 +75,8 @@
         "score",
         "why_it_matters",
         "why_this_score",
-        "how_to_improve"
+        "how_to_improve",
+        "priority"
       ],
       "properties": {
         "score": {
@@ -91,6 +96,10 @@
         },
         "criterion": {
           "type": "string"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["High", "Medium", "Low"]
         }
       },
       "additionalProperties": false

@@ -13,6 +13,21 @@ interface ReportPageProps {
 
 const ReportPage: React.FC<ReportPageProps> = ({ url, report, screenshot, isCached, reportType }) => {
   const [view, setView] = useState<'desktop' | 'mobile'>('desktop');
+  const topActions = React.useMemo(() => {
+    const seen = new Set<string>();
+    const actions: string[] = [];
+    Object.values(report.pages).forEach(page => {
+      ['desktop', 'mobile'].forEach(dev => {
+        page[dev].recommendations.forEach(rec => {
+          if (!seen.has(rec)) {
+            seen.add(rec);
+            actions.push(rec);
+          }
+        });
+      });
+    });
+    return actions.slice(0, 5);
+  }, [report]);
 
   return (
     <PageLayout>
@@ -35,6 +50,19 @@ const ReportPage: React.FC<ReportPageProps> = ({ url, report, screenshot, isCach
               {url}
             </a>
           </h2>
+          <p className="mt-2 font-medium">Overall CRO Score: {report.overall_score}</p>
+          <p className="mb-4 text-gray-700">{report.overall_observations}</p>
+
+          {topActions.length > 0 && (
+            <div className="bg-blue-50 p-4 rounded-md mb-4">
+              <h3 className="font-semibold mb-2">What to fix first</h3>
+              <ul className="list-disc pl-5 space-y-1 text-gray-800">
+                {topActions.map((a, i) => (
+                  <li key={i}>{a}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Device Toggle Buttons */}
           <div className="flex gap-4 mt-2">
@@ -58,6 +86,11 @@ const ReportPage: React.FC<ReportPageProps> = ({ url, report, screenshot, isCach
 
           {/* Report Sections */}
           <ReportDetails report={report as ReportSchema} view={view} isCached={isCached} reportType={reportType}/>
+
+          <div className="mt-6 p-4 bg-green-50 rounded-md text-center">
+            Need help implementing these fixes?{' '}
+            <a href="#" className="text-green-700 underline">Contact us or upgrade for expert assistance.</a>
+          </div>
         </div>
 
         {/* Right Column (Screenshot Placeholder) */}

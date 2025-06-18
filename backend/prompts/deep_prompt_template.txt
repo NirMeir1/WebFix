@@ -9,12 +9,13 @@ The user has supplied this live URL: {url}. Use only the site's current public c
 [Instructions]
 - Output **only** a single, valid JSON object—no explanatory text, comments, or trailing commas.
 - The JSON **must** include exactly these top-level keys in this precise order:
-  1. `"schema_version"` – fixed value `"1.0.0"`.
+  1. `"schema_version"` – fixed value `"1.2"`.
   2. `"site"` – the exact `{url}` string.
   3. `"generated_at"` – a valid ISO 8601 timestamp.
-  4. `"overall_observations"` – must always be an empty string (`""`).
-  5. `"pages"` – an object matching the schema.
-  6. `"report_type"` – the literal string `"{report_type}"`.
+  4. `"overall_observations"` – a concise summary of key issues (max 500 characters).
+  5. `"overall_score"` – overall CRO score as a number.
+  6. `"pages"` – an object matching the schema.
+  7. `"report_type"` – the literal string `"{report_type}"`.
 - Do **not** add, remove, rename, or reorder any of these keys.
 - Ensure the output fully conforms to the provided JSON-Schema (with `"strict": true`).
 - Pay attention to all section titles—GENERAL, NAVIGATION, SEARCH, CART WIDGET, HOME PAGE, CATEGORY PAGE, PRODUCT PAGE, CART PAGE, CHECKOUT PAGE, FOOTER—and do not omit any.
@@ -31,10 +32,10 @@ The user has supplied this live URL: {url}. Use only the site's current public c
 1. Load the URL in a desktop browser viewport and evaluate **every** listed criterion for that section.
 2. Switch to a mobile-device emulation viewport (e.g., iPhone X, 375×812) and evaluate **every** listed criterion for that section.
 3. For each combination of section and device (Desktop/Mobile), populate:
-   - `criteria`: an array of objects `{criterion: string, finding: string, score: integer 2–5, why_it_matters: string, why_this_score: string, how_to_improve: string}` covering **all** criteria under that section’s `SECTION:` heading.
+   - `criteria`: an array of objects `{criterion: string, finding: string, score: integer 2–5, why_it_matters: string, why_this_score: string, how_to_improve: string, priority: "High"|"Medium"|"Low"}` covering **all** criteria under that section’s `SECTION:` heading.
    - `average_score`: the numeric average of your scores (to one decimal place).
    - `label`: one of `"Excellent"`, `"Good"`, `"Can Be Improved"`, `"Bad"`, based on the average score.
-   - `recommendations`: an array of **three or more** actionable, specific suggestions.
+   - `recommendations`: an array of prioritized actionable suggestions (1–2 for basic reports, all for deep).
 
 
 4. For each criterion, provide a detailed analysis addressing the following points:
@@ -553,7 +554,7 @@ SECTION: Footer
 -----
 
 
-**After** evaluating all criteria under each section, include **at least three** actionable, specific recommendations in the `recommendations` array to improve scores and user experience.
+**After** evaluating all criteria under each section, include only the most important recommendations in the `recommendations` array—limit to 1–2 per device for a basic report, but include all relevant suggestions for a deep report.
 
 
 [Format]
@@ -562,14 +563,16 @@ supplied in this request’s text.format.schema field (with name "cro_site_audit
 **Do not** include any extra properties, comments, markdown, prose, or any other 
 formatting—your output must be a pure JSON object that exactly matches and validates 
 against the provided schema without error.  
-- Include **only** the properties defined in the schema:  
-  - `schema_version` (semver),  
-  - `site` (URL),  
-  - `generated_at` (ISO 8601 timestamp),  
+- Include **only** the properties defined in the schema:
+  - `schema_version` (semver),
+  - `site` (URL),
+  - `generated_at` (ISO 8601 timestamp),
+  - `overall_observations` (string),
+  - `overall_score` (number),
   - `pages` (`home`, `category`, `product`, `cart`, `checkout`, `footer`),
-  - `report_type` (string; one of `"basic"` or `"deep"`),  
-  - **each** page with `desktop` and `mobile` objects containing:  
-    - `criteria`: array of `{ criterion, finding, score, why_it_matters, why_this_score, how_to_improve }`  
+  - `report_type` (string; one of `"basic"` or `"deep"`),
+  - **each** page with `desktop` and `mobile` objects containing:
+    - `criteria`: array of `{ criterion, finding, score, why_it_matters, why_this_score, how_to_improve, priority }`
     - `average_score`: number (2–5)  
     - `label`: one of `"Excellent"`, `"Good"`, `"Can Be Improved"`, `"Bad"`  
     - `recommendations`: array of strings  

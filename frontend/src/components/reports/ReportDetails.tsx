@@ -9,6 +9,7 @@ interface PageViewData {
     why_it_matters: string
     why_this_score: string
     how_to_improve: string
+    priority: 'High' | 'Medium' | 'Low'
   }>
   average_score: number
   label: string
@@ -16,6 +17,8 @@ interface PageViewData {
 }
 
 export interface ReportSchema {
+  overall_observations: string
+  overall_score: number
   pages: Record<
     | 'home'
     | 'category'
