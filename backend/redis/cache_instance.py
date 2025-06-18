@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from backend.redis.cache_manager import CacheManager
+# from backend.redis.cache_manager import CacheManager
 
 load_dotenv()
 
@@ -11,4 +11,10 @@ redis_config = {
     "password": os.getenv("REDIS_PASSWORD")
 }
 
-cache = CacheManager(redis_config)
+# Temporarily disable external Redis caching due to connection issues.
+class DummyCache:
+    async def run(self, url: str, report_type: str, email: str, gpt_func):
+        output = await gpt_func()
+        return False, output
+
+cache = DummyCache()
