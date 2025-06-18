@@ -17,7 +17,7 @@ The user has supplied this live URL: {url}. Use only the site's current public c
   6. `"pages"` – an object matching the schema.
   7. `"report_type"` – the literal string `"{report_type}"`.
 - Do **not** add, remove, rename, or reorder any of these keys.
-- Ensure the output fully conforms to the provided JSON-Schema (with `"strict": true`).
+ - Ensure the output fully conforms to the provided JSON-Schema.
 - Pay attention to all section titles—GENERAL, NAVIGATION, SEARCH, CART WIDGET, HOME PAGE, CATEGORY PAGE, PRODUCT PAGE, CART PAGE, CHECKOUT PAGE, FOOTER—and do not omit any.
 - Do **not** eliminate, summarize, or truncate any criteria: the **Task** block already lists **every** criterion under each `SECTION:` heading—evaluate **all** of them.
 - For each criterion, generate three short explanations:

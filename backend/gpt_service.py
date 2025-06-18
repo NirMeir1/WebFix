@@ -98,7 +98,7 @@ class ChatGPTService:
                     "type": "json_schema",
                     "name": "cro_site_audit",
                     "schema": schema,
-                    "strict": True,
+                    "strict": False,
                 }
             },
             "reasoning": {},
