@@ -20,9 +20,9 @@ The user has supplied this live URL: {url}. Use only the site's current public c
 - Pay attention to all section titles—GENERAL, NAVIGATION, SEARCH, CART WIDGET, HOME PAGE, CATEGORY PAGE, PRODUCT PAGE, CART PAGE, CHECKOUT PAGE, FOOTER—and do not omit any.
 - Focus on only the three most impactful criteria for each section and device.
 - For each chosen criterion, generate three short explanations:
-    • why_it_matters – why this criterion affects conversions (1-2 sentences).
-    • why_this_score – why you awarded that numeric score (1-2 sentences).
-    • how_to_improve – one concise fix prefixed with 🟢 Quick Win, 🟡 Optional Fix, or 🔴 Major Project.
+    • why_it_matters – why this criterion affects conversions (1–2 sentences).
+    • why_this_score – why you awarded that numeric score (1–2 sentences).
+    • how_to_improve – one concise fix prefixed with 🟢 Quick Win, 🟡 Optional Fix, or 🔴 Major Project, **including a brief positive example from a well-known site with a link.**
 
 **Ensure your analysis and JSON output explicitly cover every numbered criterion under each SECTION—none may be omitted.**
 
@@ -31,8 +31,8 @@ The user has supplied this live URL: {url}. Use only the site's current public c
 1. Load the URL in a desktop browser viewport and review every criterion, but report only the three most impactful issues.
 2. Switch to a mobile-device emulation viewport (e.g., iPhone X, 375×812) and do the same.
 3. For each combination of section and device (Desktop/Mobile), populate:
-   - `summary`: a short bullet list highlighting what works well and what needs improvement.
-   - `quick_wins`: 3–5 low-effort actions requiring no developer or designer.
+   - `summary`: a short bullet list using `✅` for what works well and `⚠️` for what needs improvement.
+   - `quick_wins`: 3–5 low-effort actions requiring no developer or designer, ideally referencing a successful example site with a link.
    - `criteria`: an array of **three** objects `{criterion: string, finding: string, score: integer 2–5, why_it_matters: string, why_this_score: string, how_to_improve: string}`.
    - `average_score`: the numeric average of your scores (to one decimal place).
    - `label`: one of `"Excellent"`, `"Good"`, `"Can Be Improved"`, `"Bad"`, based on the average score.
@@ -571,8 +571,8 @@ against the provided schema without error.
   - `pages` (`home`, `category`, `product`, `cart`, `checkout`, `footer`),
   - `report_type` (string; one of `"basic"` or `"deep"`),  
   - **each** page with `desktop` and `mobile` objects containing:
-    - `summary`: string
-    - `quick_wins`: array of strings
+    - `summary`: string (bullet list with `✅` and `⚠️` markers)
+    - `quick_wins`: array of strings (may link to positive examples)
     - `criteria`: array of `{ criterion, finding, score, why_it_matters, why_this_score, how_to_improve }`
     - `average_score`: number (2–5)
     - `label`: one of `"Excellent"`, `"Good"`, `"Can Be Improved"`, `"Bad"`
