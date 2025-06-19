@@ -18,23 +18,25 @@ The user has supplied this live URL: {url}. Use only the site's current public c
 - Do **not** add, remove, rename, or reorder any of these keys.
 - Ensure the output fully conforms to the provided JSON-Schema (with `"strict": true`).
 - Pay attention to all section titles—GENERAL, NAVIGATION, SEARCH, CART WIDGET, HOME PAGE, CATEGORY PAGE, PRODUCT PAGE, CART PAGE, CHECKOUT PAGE, FOOTER—and do not omit any.
-- Do **not** eliminate, summarize, or truncate any criteria: the **Task** block already lists **every** criterion under each `SECTION:` heading—evaluate **all** of them.
-- For each criterion, generate three short explanations:
+- Focus on only the three most impactful criteria for each section and device.
+- For each chosen criterion, generate three short explanations:
     • why_it_matters – why this criterion affects conversions (1-2 sentences).
     • why_this_score – why you awarded that numeric score (1-2 sentences).
-    • how_to_improve – one concise, actionable fix (1-2 sentences).
+    • how_to_improve – one concise fix prefixed with 🟢 Quick Win, 🟡 Optional Fix, or 🔴 Major Project.
 
 **Ensure your analysis and JSON output explicitly cover every numbered criterion under each SECTION—none may be omitted.**
 
 
 [Task]
-1. Load the URL in a desktop browser viewport and evaluate **every** listed criterion for that section.
-2. Switch to a mobile-device emulation viewport (e.g., iPhone X, 375×812) and evaluate **every** listed criterion for that section.
+1. Load the URL in a desktop browser viewport and review every criterion, but report only the three most impactful issues.
+2. Switch to a mobile-device emulation viewport (e.g., iPhone X, 375×812) and do the same.
 3. For each combination of section and device (Desktop/Mobile), populate:
-   - `criteria`: an array of objects `{criterion: string, finding: string, score: integer 2–5, why_it_matters: string, why_this_score: string, how_to_improve: string}` covering **all** criteria under that section’s `SECTION:` heading.
+   - `summary`: a short bullet list highlighting what works well and what needs improvement.
+   - `quick_wins`: 3–5 low-effort actions requiring no developer or designer.
+   - `criteria`: an array of **three** objects `{criterion: string, finding: string, score: integer 2–5, why_it_matters: string, why_this_score: string, how_to_improve: string}`.
    - `average_score`: the numeric average of your scores (to one decimal place).
    - `label`: one of `"Excellent"`, `"Good"`, `"Can Be Improved"`, `"Bad"`, based on the average score.
-   - `recommendations`: an array of **three or more** actionable, specific suggestions.
+   - `recommendations`: an array of 3–5 concise takeaways or fixes.
 
 
 4. For each criterion, provide a detailed analysis addressing the following points:
@@ -568,11 +570,13 @@ against the provided schema without error.
   - `generated_at` (ISO 8601 timestamp),  
   - `pages` (`home`, `category`, `product`, `cart`, `checkout`, `footer`),
   - `report_type` (string; one of `"basic"` or `"deep"`),  
-  - **each** page with `desktop` and `mobile` objects containing:  
-    - `criteria`: array of `{ criterion, finding, score, why_it_matters, why_this_score, how_to_improve }`  
-    - `average_score`: number (2–5)  
-    - `label`: one of `"Excellent"`, `"Good"`, `"Can Be Improved"`, `"Bad"`  
-    - `recommendations`: array of strings  
+  - **each** page with `desktop` and `mobile` objects containing:
+    - `summary`: string
+    - `quick_wins`: array of strings
+    - `criteria`: array of `{ criterion, finding, score, why_it_matters, why_this_score, how_to_improve }`
+    - `average_score`: number (2–5)
+    - `label`: one of `"Excellent"`, `"Good"`, `"Can Be Improved"`, `"Bad"`
+    - `recommendations`: array of strings
 - **No** extra properties or nesting allowed.  
 - Ensure the JSON parses without errors and validates against the schema.
 - **Begin** your output **immediately** with `{` and **end** with `}`—no extra whitespace, text, or markdown.

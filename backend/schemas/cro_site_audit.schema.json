@@ -114,12 +114,23 @@
     "deviceReport": {
       "type": "object",
       "required": [
+        "summary",
+        "quick_wins",
         "criteria",
         "average_score",
         "label",
         "recommendations"
       ],
       "properties": {
+        "summary": {
+          "type": "string"
+        },
+        "quick_wins": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "label": {
           "type": "string",
           "enum": [
