@@ -8,7 +8,7 @@ from typing import Dict
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],
+    allow_origins=["http://localhost:8080", "http://localhost:5173"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
