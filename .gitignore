@@ -33,3 +33,5 @@ build/
 
 # ─── System ────────────────────────────────────────────────────────────────────
 .DS_Store
+!wp-plugin/dist/ab-client.min.js
+
