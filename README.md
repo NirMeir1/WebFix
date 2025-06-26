@@ -23,6 +23,13 @@ npm install
 npm run dev
 ```
 
+### Quick Setup
+To spin up a WordPress instance with the plugin and run tests automatically, execute:
+```bash
+./setup.sh
+```
+This requires Docker to be installed on your machine.
+
 ## Usage
 1. Activate the plugin and ensure tracking is enabled in the settings page.
 2. Visit a page containing an element with `data-ab-id="cta"`. The JS client will assign a variant and track views and clicks.
