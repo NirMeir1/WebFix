@@ -1,0 +1,21 @@
+(function(){
+  var config = window.blAbConfig || {trackingEnabled:true};
+  if(!config.trackingEnabled) return;
+  var variant = localStorage.getItem('bl_ab_variant');
+  if(!variant){
+    var variants=['A','B','C'];
+    variant = variants[Math.floor(Math.random()*variants.length)];
+    localStorage.setItem('bl_ab_variant', variant);
+  }
+  var texts={A:'Join Now',B:'Sign Up Today',C:'Get Started'};
+  var btn=document.getElementById('cta-test-btn');
+  if(btn){btn.innerText=texts[variant]||btn.innerText;
+    btn.addEventListener('click',function(){
+      fetch('http://localhost:8000/events',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({experiment:'cta_test',variant:variant,goal:'click'})
+      });
+    });
+  }
+})();
