@@ -6,10 +6,11 @@ This repository contains a minimal A/B testing stack for WordPress.
 
 1. Install Docker and Docker Compose.
 2. Run `docker-compose up --build` from the repository root.
-3. Visit `http://localhost:8080` to finish WordPress setup.
-4. Log in to WordPress admin and activate the **BottomLine AB Tests** plugin.
-5. Open the "A/B Test Sample Page" to see the CTA modified.
-6. View results at `http://localhost:3000/dashboard/cta_test` when the React app is served or by visiting the backend API at `http://localhost:8000/results/cta_test`.
+3. In another terminal, run `npm run dev` inside the `frontend/` directory to start the React dev server.
+4. Visit `http://localhost:8080` to finish WordPress setup.
+5. Log in to WordPress admin and activate the **BottomLine AB Tests** plugin.
+6. Open the "A/B Test Sample Page" to see the CTA modified.
+7. View results at `http://localhost:5173/dashboard/cta_test` when the React app is served or by visiting the backend API at `http://localhost:8000/results/cta_test`.
 
 ## WordPress Plugin
 
