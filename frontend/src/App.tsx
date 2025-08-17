@@ -20,13 +20,13 @@ const App: React.FC = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [report, setReport] = useState<ReportSchema | null>(null)
+  const [report, setReport] = useState<ReportSchema | null>(null);
   const [reportType, setReportType] = useState<'basic' | 'deep'>('basic');
   const [message, setMessage] = useState('');
   const [showReport, setShowReport] = useState(false);
   const [screenshot, setScreenshot] = useState('');
   const [loadingMessage, setLoadingMessage] = useState('');
-  const [isCached, setIsCached] = useState(false)
+  const [isCached, setIsCached] = useState(false);
 
 
   useEffect(() => {
@@ -68,7 +68,7 @@ const App: React.FC = () => {
         report_type: reportType,
       });
 
-      const { output, screenshot_base64, is_cached } = res.data
+      const { output, screenshot_base64, is_cached } = res.data;
 
       if (res.data.token) {
         localStorage.setItem('jwt', res.data.token);
@@ -77,9 +77,9 @@ const App: React.FC = () => {
       const parsed: ReportSchema =
         typeof output === 'string' ? JSON.parse(output) : output;
       setReport(parsed);
-      setScreenshot(`data:image/png;base64,${screenshot_base64}`) 
-      setIsCached(is_cached)                                     // store the cache‐flag
-      setShowReport(true)
+      setScreenshot(`data:image/png;base64,${screenshot_base64}`);
+      setIsCached(is_cached);                                     // store the cache‐flag
+      setShowReport(true);
       
     } catch (err) {
       const axiosError = err as AxiosError;

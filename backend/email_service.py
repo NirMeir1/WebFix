@@ -33,8 +33,8 @@ def decode_jwt_token(token: str) -> Dict:
     return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
 
 # Send Verification Email
-def send_verification_email(email: str, jwt_token: str):
-    print("CURRENT VERIFY URL:", FRONTEND_VERIFY_URL)
+def send_verification_email(email: str, jwt_token: str) -> None:
+    logger.info("Sending verification email to %s", email)
     verify_link = f"{FRONTEND_VERIFY_URL}?token={jwt_token}"
     subject = "Verify your email address"
     body_text = f"Hello,\n\nPlease verify your email by clicking the following link:\n{verify_link}\n"

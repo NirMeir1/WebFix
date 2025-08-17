@@ -11,7 +11,7 @@ class UrlRequest(BaseModel):
 
     # Using @model_validator for overall validation at the model level
     @model_validator(mode="before")
-    def validate_fields(cls, values):
+    def validate_fields(cls, values: dict) -> dict:
         report_type = values.get('report_type')
 
         # Validate report_type
@@ -29,8 +29,7 @@ class UrlRequest(BaseModel):
                 raise ValueError(f"Invalid email: {e}")
 
         # Uncomment the following lines if you want to enforce email for deep report
-        
-         # ✅ Enforce required email for deep report
+        # ✅ Enforce required email for deep report
         # if report_type == 'deep' and not email:
         #     raise ValueError("Email is required for a deep report.")
         

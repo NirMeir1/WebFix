@@ -11,7 +11,6 @@ from backend.utils.helper import normalize_url, is_mobile
 from backend.redis.cache_instance import cache as run_cache
 from fastapi.middleware.cors import CORSMiddleware
 import logging
-import jwt
 import time
 
 # ─── Initialization ───────────────────────────────────────────────────────────

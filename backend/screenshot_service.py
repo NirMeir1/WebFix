@@ -15,6 +15,7 @@ def run_screenshot_subprocess(url: str) -> str:
         logger.info("Screenshot completed")
         return result.stdout.strip()
     except subprocess.CalledProcessError as e:
-        logger.error(f"Screenshot subprocess failed: {e.stderr.strip()}")
-    except Exception as e:
-        logger.error(f"Unexpected screenshot error: {str(e)}")
+        logger.error("Screenshot subprocess failed: %s", e.stderr.strip())
+    except Exception:
+        logger.exception("Unexpected screenshot error")
+    return ""

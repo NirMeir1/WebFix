@@ -39,3 +39,4 @@ if __name__ == "__main__":
             print(result, end="")  # ✅ Send base64 to stdout (no newline)
     else:
         print("No URL provided", file=sys.stderr)
+
